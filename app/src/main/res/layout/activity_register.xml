@@ -13,7 +13,6 @@
         android:padding="32dp"
         android:gravity="center">
 
-        <!-- Título de la pantalla -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +23,6 @@
             android:gravity="center"
             android:layout_marginBottom="8dp" />
 
-        <!-- Subtítulo descriptivo -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +32,6 @@
             android:gravity="center"
             android:layout_marginBottom="32dp" />
 
-        <!-- Input de Cedula (corregido: teclado numérico, con id de contenedor para errores) -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilCedula"
             android:layout_width="match_parent"
@@ -59,7 +56,6 @@
                 android:contentDescription="Campo de número de cédula, 10 dígitos" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Input de Nombres -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilNombres"
             android:layout_width="match_parent"
@@ -81,8 +77,6 @@
                 android:contentDescription="Campo de nombres completos" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Input de Edad: ahora es de SOLO LECTURA, se llena únicamente con el calendario -->
-        <!-- Esto evita que la persona escriba una fecha inválida a mano -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEdad"
             android:layout_width="match_parent"
@@ -110,7 +104,6 @@
                 android:contentDescription="Toca para abrir el calendario y elegir tu fecha de nacimiento" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Input de Correo Electrónico -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilCorreo"
             android:layout_width="match_parent"
@@ -132,7 +125,6 @@
                 android:contentDescription="Campo de correo electrónico" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Input de Contraseña con icono de "Ver/Ocultar" -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilContrasenaRegistro"
             android:layout_width="match_parent"
@@ -167,7 +159,6 @@
             android:gravity="center"
             android:layout_marginBottom="32dp" />
 
-        <!-- Botón Principal de Registro -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegistrarCuenta"
             android:layout_width="match_parent"
@@ -181,7 +172,6 @@
             app:cornerRadius="12dp"
             android:layout_marginBottom="16dp" />
 
-        <!-- Botón para regresar al Login -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnVolverLogin"
             android:layout_width="match_parent"

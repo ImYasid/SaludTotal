@@ -21,7 +21,6 @@
             android:src="@drawable/salud_total"
             android:contentDescription="Logo de SaludTotal" />
 
-        <!-- Título principal emulando el Logo -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,7 +30,6 @@
             android:textStyle="bold"
             android:gravity="center" />
 
-        <!-- Subtítulo -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +40,6 @@
             android:gravity="center"
             android:layout_marginBottom="8dp" />
 
-        <!-- NUEVO: Instrucción clara de qué hacer en esta pantalla -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +49,6 @@
             android:gravity="center"
             android:layout_marginBottom="32dp" />
 
-        <!-- Input de Usuario / Cédula (renombrado y con teclado numérico) -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilUsuario"
             android:layout_width="match_parent"
@@ -75,7 +71,6 @@
                 android:contentDescription="Campo de número de cédula" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Input de Contraseña con icono de "Ver/Ocultar" MÁS GRANDE y texto de apoyo -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilContrasena"
             android:layout_width="match_parent"
@@ -99,7 +94,6 @@
                 android:contentDescription="Campo de contraseña" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- NUEVO: recordatorio de qué hace el icono del ojo -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -109,7 +103,6 @@
             android:gravity="center"
             android:layout_marginBottom="32dp" />
 
-        <!-- Botón Principal, más grande y con altura mínima táctil generosa -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnIniciarSesion"
             android:layout_width="match_parent"
@@ -123,7 +116,6 @@
             app:cornerRadius="12dp"
             android:layout_marginBottom="20dp" />
 
-        <!-- Botón de Registro tipo Texto (Sin fondo), texto más grande -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnIrRegistro"
             android:layout_width="match_parent"
@@ -134,7 +126,6 @@
             android:textColor="@color/salud_blue"
             style="@style/Widget.MaterialComponents.Button.TextButton" />
 
-        <!-- NUEVO: acceso a ayuda humana, visible desde la primera pantalla -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAyudaLogin"
             android:layout_width="match_parent"

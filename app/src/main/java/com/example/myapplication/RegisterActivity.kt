@@ -10,22 +10,35 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.Calendar
 
-
+/**
+ * Controlador de la interfaz de registro de usuarios de SaludTotal.
+ * * Esta clase gestiona el alta de nuevos pacientes, aplicando validaciones granulares
+ * en tiempo de ejecución. Integra un selector de fecha nativo para mitigar errores de
+ * entrada manual y un mecanismo persistente de confirmación de registro adaptado
+ * a las necesidades de accesibilidad del adulto mayor.
+ */
 class RegisterActivity : AppCompatActivity() {
 
-    // Variable global para guardar la edad calculada desde el calendario
+    // Almacena el cálculo matemático de la edad del paciente derivado del DatePicker
     private var edadCalculadaDelUsuario = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        // ==========================================
+        // 1. VINCULACIÓN DE CONTENEDORES (MATERIAL DESIGN)
+        // ==========================================
+        // Estructuras que encapsulan las cajas de texto y gestionan las alertas de error fijas
         val tilCedula = findViewById<TextInputLayout>(R.id.tilCedula)
         val tilNombres = findViewById<TextInputLayout>(R.id.tilNombres)
         val tilEdad = findViewById<TextInputLayout>(R.id.tilEdad)
         val tilCorreo = findViewById<TextInputLayout>(R.id.tilCorreo)
         val tilContrasena = findViewById<TextInputLayout>(R.id.tilContrasenaRegistro)
 
+        // ==========================================
+        // 2. VINCULACIÓN DE CAMPOS DE ENTRADA Y BOTONES
+        // ==========================================
         val etCedula = findViewById<TextInputEditText>(R.id.etCedula)
         val etNombres = findViewById<TextInputEditText>(R.id.etNombres)
         val etEdad = findViewById<TextInputEditText>(R.id.etEdadRegistro)
@@ -35,15 +48,22 @@ class RegisterActivity : AppCompatActivity() {
         val btnRegistrarCuenta = findViewById<MaterialButton>(R.id.btnRegistrarCuenta)
         val btnVolverLogin = findViewById<MaterialButton>(R.id.btnVolverLogin)
 
-        // Limpia el error de un campo apenas la persona vuelve a tocarlo
+        // ==========================================
+        // 3. LIMPIEZA PROACTIVA DE ESTADOS DE ERROR
+        // ==========================================
+        // Patrón UX: Disminuye la frustración visual liberando la alerta roja
+        // de inmediato cuando el usuario enfoca nuevamente el componente para editarlo.
         etCedula.setOnClickListener { tilCedula.error = null }
         etNombres.setOnClickListener { tilNombres.error = null }
         etCorreo.setOnClickListener { tilCorreo.error = null }
         etContrasena.setOnClickListener { tilContrasena.error = null }
 
-        // ---> LÓGICA DEL CALENDARIO (DatePicker) <---
-        // El campo de edad ahora es de solo lectura (ver XML): la única forma de llenarlo
-        // es con este calendario, así se evita que alguien escriba una fecha inválida a mano.
+        // ==========================================
+        // 4. CONTROLADOR DE ENTRADA INTERACTIVA (CALENDARIO)
+        // ==========================================
+        // Al marcar el campo como 'focusable="false"' en el XML, este click listener
+        // actúa como un botón para desplegar un DatePickerDialog nativo. Se anula la
+        // inserción manual de datos erróneos (ej. formatos de fecha inexistentes).
         etEdad.setOnClickListener {
             tilEdad.error = null
             val calendario = Calendar.getInstance()
@@ -52,40 +72,45 @@ class RegisterActivity : AppCompatActivity() {
             val diaActual = calendario.get(Calendar.DAY_OF_MONTH)
 
             val datePickerDialog = DatePickerDialog(this, { _, year, month, dayOfMonth ->
-                // Calcular la edad matemáticamente
+                // Cálculo aritmético preciso de la edad del paciente
                 edadCalculadaDelUsuario = anioActual - year
                 if (mesActual < month || (mesActual == month && diaActual < dayOfMonth)) {
                     edadCalculadaDelUsuario--
                 }
 
-                // Mostrar la fecha y la edad en la caja de texto
+                // Inserción de cadena formateada que provee retroalimentación visual inmediata
                 val mesReal = month + 1
                 etEdad.setText("$dayOfMonth/$mesReal/$year  (Edad: $edadCalculadaDelUsuario años)")
             }, anioActual, mesActual, diaActual)
 
-            // Limitar el calendario para que no puedan elegir fechas en el futuro
+            // Restricción técnica: Impide la selección de marcas de tiempo futuras
             datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
             datePickerDialog.show()
         }
 
-        // ---> LÓGICA DEL BOTÓN REGISTRARSE (Con Validaciones campo por campo) <---
+        // ==========================================
+        // 5. MÓDULO DE VALIDACIÓN Y PERSISTENCIA
+        // ==========================================
         btnRegistrarCuenta.setOnClickListener {
-            // Evita doble envío por doble toque accidental
+
+            // Mecanismo Antirrebote (Debounce) preventivo para clicks repetitivos involuntarios
             btnRegistrarCuenta.isEnabled = false
             btnRegistrarCuenta.postDelayed({ btnRegistrarCuenta.isEnabled = true }, 1000)
 
+            // Sanitización preliminar de entradas mediante el truncado de espacios vacíos
             val cedula = etCedula.text.toString().trim()
             val nombres = etNombres.text.toString().trim()
             val correo = etCorreo.text.toString().trim()
             val contrasena = etContrasena.text.toString().trim()
 
+            // Reset general de la UI antes del procesamiento de los datos
             tilCedula.error = null
             tilNombres.error = null
             tilEdad.error = null
             tilCorreo.error = null
             tilContrasena.error = null
 
-            // Cada validación apunta al campo exacto con el problema, en vez de un mensaje genérico
+            // --- Orquestación de Reglas de Validación Estrictas ---
             if (cedula.isEmpty()) {
                 tilCedula.error = "Escribe tu número de cédula"
                 etCedula.requestFocus()
@@ -110,6 +135,7 @@ class RegisterActivity : AppCompatActivity() {
                 etCorreo.requestFocus()
                 return@setOnClickListener
             }
+            // Patrón de expresión regular provisto por el SDK de Android para correos
             if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
                 tilCorreo.error = "Este correo no es válido, revísalo"
                 etCorreo.requestFocus()
@@ -126,35 +152,42 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Si pasa todas las validaciones, guardamos los datos
+            // --- Confirmación y Escritura de Credenciales (Persistencia Local) ---
             val sharedPreferences = getSharedPreferences("SaludTotalApp", MODE_PRIVATE)
             val editor = sharedPreferences.edit()
             editor.putString("usuarioGuardado", cedula)
             editor.putString("contrasenaGuardada", contrasena)
             editor.putString("nombreGuardado", nombres)
-            editor.apply()
+            editor.apply() // Commit asíncrono optimizado para hilos de interfaz de usuario
 
+            // Renderizado del diálogo de confirmación contextual personalizado
             mostrarConfirmacionRegistro(nombres)
         }
 
-        // Lógica del botón de volver
+        // Retorno simple al stack previo (LoginActivity)
         btnVolverLogin.setOnClickListener {
             finish()
         }
     }
 
-    // Diálogo que se queda en pantalla hasta que la persona lo cierre a propósito,
-    // en vez de un Toast que puede desaparecer antes de que alcance a leerlo.
+    /**
+     * Despliega un cuadro de diálogo modal e imperativo que confirma el éxito de la transacción.
+     * Evalúa la edad del registro actual para adaptar el mensaje descriptivo y notificar la
+     * inicialización automática de las propiedades de interfaz del "Modo Fácil".
+     *
+     * @param nombres El nombre completo del usuario utilizado en la personalización de la alerta.
+     */
     private fun mostrarConfirmacionRegistro(nombres: String) {
         val mensaje = if (edadCalculadaDelUsuario >= 60) {
             "¡Listo, $nombres! Tu cuenta fue creada con éxito.\n\nActivamos el Modo Fácil para ti, con letras más grandes y menos pasos."
         } else {
             "¡Listo, $nombres! Tu cuenta fue creada con éxito.\n\nAhora puedes iniciar sesión con tu cédula y tu contraseña."
         }
+
         AlertDialog.Builder(this)
             .setTitle("Cuenta creada")
             .setMessage(mensaje)
-            .setCancelable(false)
+            .setCancelable(false) // Forzar lectura e interacción deliberada del usuario
             .setPositiveButton("Ir a Iniciar Sesión") { _, _ -> finish() }
             .show()
     }
