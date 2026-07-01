@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFBFF">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Encabezado: "Volver" ahora es un botón real, con espacio de toque cómodo -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVolver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="Volver"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:textColor="#424D59"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@android:drawable/ic_menu_revert"
+                    app:iconTint="#424D59"
+                    app:iconGravity="textStart"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:contentDescription="Volver a la pantalla anterior" />
+            </RelativeLayout>
+
+            <!-- Barra de Progreso Superior -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Paso 1 de 3: Especialidad"
+                    android:textColor="@color/salud_blue"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/barraProgreso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:progress="33"
+                    app:trackColor="#E2E8F0"
+                    app:indicatorColor="@color/salud_teal"
+                    app:trackThickness="12dp"
+                    app:trackCornerRadius="6dp" />
+            </LinearLayout>
+
+            <!-- Títulos Principales -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿Qué te duele o qué\nnecesitas?"
+                android:textColor="#424D59"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Toca una especialidad de la lista de abajo"
+                android:textColor="#6B7480"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Barra de Búsqueda: ahora SÍ filtra la lista mientras escribes -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFFFFF"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="6dp"
+                    android:gravity="center_vertical">
+
+                    <EditText
+                        android:id="@+id/etBuscar"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="Buscar especialidad..."
+                        android:textColorHint="#A0A8B1"
+                        android:paddingStart="16dp"
+                        android:textSize="16sp"
+                        android:inputType="text"
+                        android:contentDescription="Buscar especialidad médica"/>
+
+                    <!-- Botón de Micrófono: explica qué hace en vez de quedar mudo -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnMicrofono"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        app:cardCornerRadius="22dp"
+                        app:cardBackgroundColor="#2C6BFE"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_marginEnd="4dp"
+                        android:contentDescription="Buscar por voz">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@android:drawable/ic_btn_speak_now"
+                            app:tint="#FFFFFF"
+                            android:padding="10dp"/>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Cuadrícula de Botones de Especialidades: texto más grande y botones más altos -->
+            <GridLayout
+                android:id="@+id/gridEspecialidades"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:alignmentMode="alignMargins">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMedicoGeneral"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:text="Médico\nGeneral"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#3B82F6"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_search"
+                    app:iconGravity="textTop"
+                    app:iconSize="36dp"
+                    app:iconTint="#FFFFFF" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCardiologia"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:text="Cardiología"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="#EF4444"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_view"
+                    app:iconGravity="textTop"
+                    app:iconSize="36dp"
+                    app:iconTint="#FFFFFF"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTraumatologia"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:text="Traumatología"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="#F97316"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                    app:iconGravity="textTop"
+                    app:iconSize="36dp"
+                    app:iconTint="#FFFFFF"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOftalmologia"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:text="Oftalmología"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="#A855F7"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_camera"
+                    app:iconGravity="textTop"
+                    app:iconSize="36dp"
+                    app:iconTint="#FFFFFF"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNeurologia"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:text="Neurología"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="#6366F1"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_info_details"
+                    app:iconGravity="textTop"
+                    app:iconSize="36dp"
+                    app:iconTint="#FFFFFF"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVacunacion"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="8dp"
+                    android:text="Vacunación"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="#22C55E"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_edit"
+                    app:iconGravity="textTop"
+                    app:iconSize="36dp"
+                    app:iconTint="#FFFFFF"/>
+
+            </GridLayout>
+
+            <!-- Mensaje que aparece si la búsqueda no encuentra nada -->
+            <TextView
+                android:id="@+id/tvSinResultados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No encontramos esa especialidad. Intenta con otra palabra."
+                android:textColor="#A0A8B1"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:padding="24dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Misma barra de navegación inferior que en Bienvenida, para que la app se sienta consistente -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:elevation="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="8dp">
+
+        <LinearLayout
+            android:id="@+id/navInicio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Ir al Inicio">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏠"
+                android:textSize="26sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inicio"
+                android:textSize="14sp"
+                android:textColor="#6B7480"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navAgendar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Ir a Agendar Cita">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📅"
+                android:textSize="26sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Agendar"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2C6BFE"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navSalir"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Cerrar Sesión">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🚪"
+                android:textSize="26sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Salir"
+                android:textSize="14sp"
+                android:textColor="#6B7480"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

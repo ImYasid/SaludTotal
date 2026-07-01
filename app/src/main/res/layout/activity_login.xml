@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_light">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/ivLogoHospital"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/salud_total"
+            android:contentDescription="Logo de SaludTotal" />
+
+        <!-- Título principal emulando el Logo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SALUDTOTAL"
+            android:textColor="@color/salud_blue"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <!-- Subtítulo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="HOSPITAL GENERAL"
+            android:textColor="@color/text_subtitle"
+            android:textSize="14sp"
+            android:letterSpacing="0.1"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <!-- NUEVO: Instrucción clara de qué hacer en esta pantalla -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Escribe tu número de cédula y tu contraseña para entrar"
+            android:textColor="@color/text_subtitle"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Input de Usuario / Cédula (renombrado y con teclado numérico) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilUsuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:boxStrokeColor="@color/salud_teal"
+            app:hintTextColor="@color/salud_teal"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUsuario"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:textSize="20sp"
+                android:hint="Número de cédula"
+                android:inputType="number"
+                android:maxLength="10"
+                android:imeOptions="actionNext"
+                android:contentDescription="Campo de número de cédula" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Input de Contraseña con icono de "Ver/Ocultar" MÁS GRANDE y texto de apoyo -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilContrasena"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:boxStrokeColor="@color/salud_teal"
+            app:hintTextColor="@color/salud_teal"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/salud_teal"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etContrasena"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:textSize="20sp"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:imeOptions="actionDone"
+                android:contentDescription="Campo de contraseña" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- NUEVO: recordatorio de qué hace el icono del ojo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Toca el ícono del ojo 👁 para ver la contraseña que escribiste"
+            android:textColor="@color/text_subtitle"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Botón Principal, más grande y con altura mínima táctil generosa -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnIniciarSesion"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Iniciar Sesión"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/salud_teal"
+            app:cornerRadius="12dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Botón de Registro tipo Texto (Sin fondo), texto más grande -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnIrRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="¿No tienes cuenta? Regístrate aquí"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:textColor="@color/salud_blue"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+        <!-- NUEVO: acceso a ayuda humana, visible desde la primera pantalla -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAyudaLogin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:text="¿Necesitas ayuda? Llámanos"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:icon="@android:drawable/stat_sys_speakerphone"
+            app:iconTint="@color/white"
+            app:backgroundTint="#00A651"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFBFF">
+
+    <!-- Contenido principal, con scroll por si el texto del sistema está agrandado -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvSaludo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hola"
+                android:textColor="#424D59"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bienvenido/a a SaludTotal"
+                android:textColor="#6B7480"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Toca el botón grande para agendar tu cita médica"
+                android:textColor="#A0A8B1"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- Botón principal: la única acción que realmente importa en esta pantalla -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAgendarCita"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:text="Agendar una Cita Nueva"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textAllCaps="false"
+                app:backgroundTint="#2C6BFE"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_menu_my_calendar"
+                app:iconGravity="textTop"
+                app:iconSize="52dp"
+                app:iconTint="#FFFFFF"
+                app:iconPadding="12dp"
+                android:elevation="8dp"
+                android:contentDescription="Botón para agendar una cita médica nueva"/>
+
+            <!-- Ayuda por llamada, ahora con texto que explica qué pasa al tocarlo -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAyuda"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="24dp"
+                android:text="¿Necesitas ayuda? Llámanos"
+                android:textColor="#FFFFFF"
+                android:textAllCaps="false"
+                android:textSize="17sp"
+                app:backgroundTint="#00A651"
+                app:cornerRadius="14dp"
+                app:icon="@android:drawable/stat_sys_speakerphone"
+                app:iconTint="#FFFFFF"
+                android:contentDescription="Llamar a la línea de ayuda de SaludTotal"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- NUEVO: Barra de navegación inferior con TEXTO VISIBLE en vez de un menú ☰ oculto.
+         Cada opción es un botón grande, siempre a la vista, sin necesidad de "descubrir" un menú. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:elevation="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="8dp">
+
+        <LinearLayout
+            android:id="@+id/navInicio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Ir al Inicio">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏠"
+                android:textSize="26sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inicio"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2C6BFE"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navAgendar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Ir a Agendar Cita">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📅"
+                android:textSize="26sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Agendar"
+                android:textSize="14sp"
+                android:textColor="#6B7480"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navSalir"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Cerrar Sesión">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🚪"
+                android:textSize="26sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Salir"
+                android:textSize="14sp"
+                android:textColor="#6B7480"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

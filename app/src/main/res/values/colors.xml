@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores Base del Logo -->
+    <color name="salud_blue">#135B79</color> <!-- Azul oscuro de "SALUD" y bordes exteriores -->
+    <color name="salud_teal">#199B94</color> <!-- Verde agua de "TOTAL" y la cruz médica -->
+    <color name="salud_green">#82BA8D</color> <!-- Verde claro de las hojas -->
+
+    <!-- Colores Secundarios y de Fondo -->
+    <color name="text_subtitle">#7E96A7</color> <!-- Gris azulado de "HOSPITAL GENERAL" -->
+    <color name="background_light">#F4F8FA</color> <!-- Un fondo casi blanco con un ligero toque azul para que la app no lastime la vista -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>
