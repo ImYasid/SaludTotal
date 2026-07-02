@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    CONTENEDOR RAÍZ: LinearLayout (Vertical)
-    * Divide la pantalla en dos grandes bloques: el contenido deslizable (arriba)
-      y la barra de navegación estática (abajo).
-    * Fondo neutro (#FAFBFF) para reducir la fatiga visual y destacar los botones de colores.
--->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,30 +6,18 @@
     android:orientation="vertical"
     android:background="#FAFBFF">
 
-    <!--
-        CONTENEDOR DINÁMICO: NestedScrollView
-        * 'android:layout_weight="1"' obliga a esta vista a ocupar todo el espacio disponible
-          empujando la barra de navegación hacia el fondo absoluto de la pantalla.
-        * Garantiza que en pantallas pequeñas el catálogo de especialidades no se corte.
-    -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <!-- Contenedor interno del scroll con márgenes de respiro (padding 24dp) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!--
-                NAVEGACIÓN DE RETORNO: Botón "Volver"
-                * Se usa un MaterialButton estilo TextButton en lugar de un simple TextView
-                  para aprovechar las animaciones táctiles (ripple effect) nativas.
-                * Altura de 48dp cumple con las normas de accesibilidad táctil.
-            -->
+            <!-- Encabezado: "Volver" ahora es un botón real, con espacio de toque cómodo -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,11 +42,7 @@
                     android:contentDescription="Volver a la pantalla anterior" />
             </RelativeLayout>
 
-            <!--
-                ORIENTACIÓN COGNITIVA: Barra de Progreso
-                * Reduce la ansiedad del usuario al mostrar exactamente en qué parte del proceso se encuentra.
-                * Diseño grueso (12dp) y bordes redondeados para máxima visibilidad.
-            -->
+            <!-- Barra de Progreso Superior -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,7 +69,7 @@
                     app:trackCornerRadius="6dp" />
             </LinearLayout>
 
-            <!-- TITULACIÓN: Lenguaje empático y directo ("¿Qué te duele?") -->
+            <!-- Títulos Principales -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -111,12 +89,7 @@
                 android:gravity="center"
                 android:layout_marginBottom="24dp"/>
 
-            <!--
-                CONTROL DE BÚSQUEDA: Buscador en tiempo real
-                * Encapsulado en un MaterialCardView para generar profundidad (elevación) y separar
-                  la caja de texto del fondo de la aplicación.
-                * Altura táctil generosa (52dp) para facilitar el enfoque del teclado.
-            -->
+            <!-- Barra de Búsqueda: ahora SÍ filtra la lista mientras escribes -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -145,7 +118,7 @@
                         android:inputType="text"
                         android:contentDescription="Buscar especialidad médica"/>
 
-                    <!-- Disparador auxiliar: Preparado para futura integración de Speech-to-Text -->
+                    <!-- Botón de Micrófono: explica qué hace en vez de quedar mudo -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnMicrofono"
                         android:layout_width="44dp"
@@ -167,12 +140,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!--
-                CATÁLOGO DE SELECCIÓN: GridLayout
-                * Divide el espacio uniformemente en 2 columnas ('android:columnCount="2"').
-                * Botones extra grandes (130dp de altura) con colores contrastantes para
-                  facilitar el mapeo cognitivo y evitar toques accidentales en la especialidad equivocada.
-            -->
+            <!-- Cuadrícula de Botones de Especialidades: texto más grande y botones más altos -->
             <GridLayout
                 android:id="@+id/gridEspecialidades"
                 android:layout_width="match_parent"
@@ -180,7 +148,6 @@
                 android:columnCount="2"
                 android:alignmentMode="alignMargins">
 
-                <!-- Botón Médico General -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnMedicoGeneral"
                     android:layout_width="0dp"
@@ -201,7 +168,6 @@
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF" />
 
-                <!-- Botón Cardiología -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCardiologia"
                     android:layout_width="0dp"
@@ -220,7 +186,6 @@
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
 
-                <!-- Botón Traumatología -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTraumatologia"
                     android:layout_width="0dp"
@@ -239,7 +204,6 @@
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
 
-                <!-- Botón Oftalmología -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOftalmologia"
                     android:layout_width="0dp"
@@ -258,7 +222,6 @@
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
 
-                <!-- Botón Neurología -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnNeurologia"
                     android:layout_width="0dp"
@@ -277,7 +240,6 @@
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
 
-                <!-- Botón Vacunación -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnVacunacion"
                     android:layout_width="0dp"
@@ -298,11 +260,7 @@
 
             </GridLayout>
 
-            <!--
-                ESTADO VACÍO (Empty State)
-                * Elemento de contingencia que se activa ('visible') desde Kotlin si el TextWatcher
-                  no encuentra coincidencias. Evita que el usuario crea que la app se congeló.
-            -->
+            <!-- Mensaje que aparece si la búsqueda no encuentra nada -->
             <TextView
                 android:id="@+id/tvSinResultados"
                 android:layout_width="match_parent"
@@ -317,11 +275,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!--
-        BARRA DE NAVEGACIÓN INFERIOR (Bottom Navigation)
-        * Fija en la base de la pantalla por jerarquía del LinearLayout principal.
-        * Resalta el contexto actual ("Agendar") usando variaciones de color y peso tipográfico.
-    -->
+    <!-- Misma barra de navegación inferior que en Bienvenida, para que la app se sienta consistente -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -332,7 +286,6 @@
         android:paddingBottom="12dp"
         android:paddingHorizontal="8dp">
 
-        <!-- Opción Inicio -->
         <LinearLayout
             android:id="@+id/navInicio"
             android:layout_width="0dp"
@@ -362,7 +315,6 @@
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
 
-        <!-- Opción Agendar (Estado Activo) -->
         <LinearLayout
             android:id="@+id/navAgendar"
             android:layout_width="0dp"
@@ -393,7 +345,6 @@
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
 
-        <!-- Opción Salir -->
         <LinearLayout
             android:id="@+id/navSalir"
             android:layout_width="0dp"
