@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
+    // 👇 Esta es la línea mágica que faltaba para compilar el código 👇
+    alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
 }
 
 android {
     namespace = "com.example.myapplication"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.myapplication"
@@ -30,9 +29,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
@@ -44,4 +47,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
+    // ==========================================
+    // BASE DE DATOS: ROOM Y CORRUTINAS
+    // ==========================================
+    // Librerías de ejecución de Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+
+    // Corrutinas para procesar datos en segundo plano sin congelar la pantalla
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // Compilador moderno KSP para generar la base de datos
+    add("ksp", "androidx.room:room-compiler:2.6.1")
 }

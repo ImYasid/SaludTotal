@@ -140,124 +140,15 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Cuadrícula de Botones de Especialidades: texto más grande y botones más altos -->
+            <!-- Antes había 6 MaterialButton escritos a mano en este XML. -->
+            <!-- Ahora este GridLayout está vacío: Kotlin lo llena con las especialidades -->
+            <!-- que vienen de la tabla "especialidades" en Room. -->
             <GridLayout
                 android:id="@+id/gridEspecialidades"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="2"
-                android:alignmentMode="alignMargins">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnMedicoGeneral"
-                    android:layout_width="0dp"
-                    android:layout_height="130dp"
-                    android:layout_row="0"
-                    android:layout_column="0"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:text="Médico General"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="#3B82F6"
-                    app:cornerRadius="16dp"
-                    app:icon="@drawable/outline_medical_services_24"
-                    app:iconGravity="textTop"
-                    app:iconSize="36dp"
-                    app:iconTint="#FFFFFF" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCardiologia"
-                    android:layout_width="0dp"
-                    android:layout_height="130dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:text="Cardiología"
-                    android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="#EF4444"
-                    app:cornerRadius="16dp"
-                    app:icon="@drawable/outline_cardiology_24"
-                    app:iconGravity="textTop"
-                    app:iconSize="36dp"
-                    app:iconTint="#FFFFFF"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTraumatologia"
-                    android:layout_width="0dp"
-                    android:layout_height="130dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:text="Traumatología"
-                    android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="#F97316"
-                    app:cornerRadius="16dp"
-                    app:icon="@drawable/outline_accessibility_new_24"                    app:iconGravity="textTop"
-                    app:iconSize="36dp"
-                    app:iconTint="#FFFFFF"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnOftalmologia"
-                    android:layout_width="0dp"
-                    android:layout_height="130dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:text="Oftalmología"
-                    android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="#A855F7"
-                    app:cornerRadius="16dp"
-                    app:icon="@drawable/outline_visibility_24"
-                    app:iconGravity="textTop"
-                    app:iconSize="36dp"
-                    app:iconTint="#FFFFFF"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnNeurologia"
-                    android:layout_width="0dp"
-                    android:layout_height="130dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:text="Neurología"
-                    android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="#6366F1"
-                    app:cornerRadius="16dp"
-                    app:icon="@drawable/outline_neurology_24"
-                    app:iconGravity="textTop"
-                    app:iconSize="36dp"
-                    app:iconTint="#FFFFFF"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnVacunacion"
-                    android:layout_width="0dp"
-                    android:layout_height="130dp"
-                    android:layout_columnWeight="1"
-                    android:layout_margin="8dp"
-                    android:text="Vacunación"
-                    android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="#22C55E"
-                    app:cornerRadius="16dp"
-                    app:icon="@drawable/outline_vaccines_24"
-                    app:iconGravity="textTop"
-                    app:iconSize="36dp"
-                    app:iconTint="#FFFFFF"/>
-
-            </GridLayout>
+                android:alignmentMode="alignMargins" />
 
             <!-- Mensaje que aparece si la búsqueda no encuentra nada -->
             <TextView

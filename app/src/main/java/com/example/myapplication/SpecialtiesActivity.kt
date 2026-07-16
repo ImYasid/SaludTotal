@@ -1,6 +1,8 @@
 package com.example.myapplication
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,14 +12,32 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.myapplication.data.local.SaludTotalDatabase
+import com.example.myapplication.data.local.entity.SpecialtyEntity
+import com.example.myapplication.data.repository.SaludTotalRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SpecialtiesActivity : AppCompatActivity() {
+
+    private val repository by lazy {
+        val db = SaludTotalDatabase.getDatabase(applicationContext)
+        SaludTotalRepository(db.userDao(), db.specialtyDao(), db.doctorDao(), db.appointmentDao())
+    }
+
+    // Guardamos el botón junto con la entidad completa (para tener el id real al navegar)
+    private val botonesEspecialidad = mutableListOf<Pair<MaterialButton, SpecialtyEntity>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_specialties)
+
+        val usuarioId = intent.getLongExtra("usuarioId", -1L)
 
         val btnVolver = findViewById<MaterialButton>(R.id.btnVolver)
         val gridEspecialidades = findViewById<GridLayout>(R.id.gridEspecialidades)
@@ -29,25 +49,30 @@ class SpecialtiesActivity : AppCompatActivity() {
         val navAgendar = findViewById<LinearLayout>(R.id.navAgendar)
         val navSalir = findViewById<LinearLayout>(R.id.navSalir)
 
-        btnVolver.setOnClickListener {
-            finish()
-        }
+        btnVolver.setOnClickListener { finish() }
 
-        // ---> Los 6 botones de especialidad ahora SÍ responden, con el mismo comportamiento <---
-        // Antes, 4 de los 6 botones (Traumatología, Oftalmología, Neurología, Vacunación)
-        // no hacían absolutamente nada al tocarlos: eso es muy confuso para cualquier usuario.
-        val botonesEspecialidad = listOf(
-            findViewById<MaterialButton>(R.id.btnMedicoGeneral) to "Médico General",
-            findViewById<MaterialButton>(R.id.btnCardiologia) to "Cardiología",
-            findViewById<MaterialButton>(R.id.btnTraumatologia) to "Traumatología",
-            findViewById<MaterialButton>(R.id.btnOftalmologia) to "Oftalmología",
-            findViewById<MaterialButton>(R.id.btnNeurologia) to "Neurología",
-            findViewById<MaterialButton>(R.id.btnVacunacion) to "Vacunación"
-        )
+        // ---> Cargar las especialidades reales desde Room, en vez de 6 botones fijos <---
+        lifecycleScope.launch {
+            // ✅ AQUÍ ESTÁ EL CAMBIO: Movemos la consulta al hilo secundario de Entrada/Salida (IO)
+            val especialidades = withContext(Dispatchers.IO) {
+                repository.obtenerEspecialidades()
+            }
 
-        botonesEspecialidad.forEach { (boton, nombreEspecialidad) ->
-            boton.setOnClickListener {
-                irADoctoresDisponibles(nombreEspecialidad)
+            if (especialidades.isEmpty()) {
+                // No debería pasar (SeedCallback las precarga), pero por si acaso
+                tvSinResultados.text = "Todavía no hay especialidades cargadas."
+                tvSinResultados.visibility = android.view.View.VISIBLE
+                return@launch
+            }
+
+            especialidades.forEach { especialidad ->
+                val boton = crearBotonEspecialidad(especialidad)
+                botonesEspecialidad.add(boton to especialidad)
+                gridEspecialidades.addView(boton)
+
+                boton.setOnClickListener {
+                    irADoctoresDisponibles(especialidad, usuarioId)
+                }
             }
         }
 
@@ -59,8 +84,8 @@ class SpecialtiesActivity : AppCompatActivity() {
                 val textoBusqueda = s.toString().trim().lowercase(Locale.getDefault())
                 var hayResultados = false
 
-                botonesEspecialidad.forEach { (boton, nombreEspecialidad) ->
-                    val coincide = nombreEspecialidad.lowercase(Locale.getDefault()).contains(textoBusqueda)
+                botonesEspecialidad.forEach { (boton, especialidad) ->
+                    val coincide = especialidad.nombre.lowercase(Locale.getDefault()).contains(textoBusqueda)
                     boton.visibility = if (coincide) android.view.View.VISIBLE else android.view.View.GONE
                     if (coincide) hayResultados = true
                 }
@@ -91,9 +116,65 @@ class SpecialtiesActivity : AppCompatActivity() {
         }
     }
 
-    private fun irADoctoresDisponibles(nombreEspecialidad: String) {
+    private fun crearBotonEspecialidad(especialidad: SpecialtyEntity): MaterialButton {
+        val boton = MaterialButton(this)
+        boton.layoutParams = GridLayout.LayoutParams().apply {
+            width = 0
+            height = dpAPx(130)
+            columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+            setMargins(dpAPx(8), dpAPx(8), dpAPx(8), dpAPx(8))
+        }
+        boton.text = especialidad.nombre.replace(" ", "\n")
+        boton.isAllCaps = false
+        boton.textSize = 16f
+        boton.setTypeface(boton.typeface, android.graphics.Typeface.BOLD)
+        boton.setTextColor(Color.WHITE)
+        boton.cornerRadius = dpAPx(16)
+        boton.backgroundTintList = ColorStateList.valueOf(Color.parseColor(especialidad.colorHex))
+
+        // Alineación del texto
+        boton.gravity = android.view.Gravity.CENTER
+        boton.textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+
+        // 👇 AQUÍ ESTÁ EL CAMBIO PARA UNIRLOS 👇
+        // Esto agrupa el ícono y el texto, y los centra verticalmente como un solo bloque
+        boton.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_TOP
+
+        // Esto define la separación exacta (en dp) entre el ícono y las letras.
+        // Puedes subir o bajar este 8 si los quieres aún más juntos o separados.
+        boton.iconPadding = dpAPx(8)
+
+        boton.iconSize = dpAPx(36)
+        boton.iconTint = ColorStateList.valueOf(Color.WHITE)
+        boton.icon = obtenerIconoPorNombre(especialidad.iconoResName)
+        boton.contentDescription = "Elegir especialidad ${especialidad.nombre}"
+
+        return boton
+    }
+
+    /** Los íconos guardados en Room son nombres de drawables. */
+    private fun obtenerIconoPorNombre(nombreIcono: String): android.graphics.drawable.Drawable? {
+        // 1. Primero busca en TU propia carpeta res/drawable (usando packageName)
+        var idRecurso = resources.getIdentifier(nombreIcono, "drawable", packageName)
+
+        // 2. Si no lo encuentra ahí, busca en los íconos por defecto de Android
+        if (idRecurso == 0) {
+            idRecurso = resources.getIdentifier(nombreIcono, "drawable", "android")
+        }
+
+        return if (idRecurso != 0) androidx.core.content.ContextCompat.getDrawable(this, idRecurso) else null
+    }
+
+    private fun dpAPx(dp: Int): Int {
+        val densidad = resources.displayMetrics.density
+        return (dp * densidad).toInt()
+    }
+
+    private fun irADoctoresDisponibles(especialidad: SpecialtyEntity, usuarioId: Long) {
         val intent = Intent(this, DoctoresDisponibles::class.java)
-        intent.putExtra("especialidad", nombreEspecialidad)
+        intent.putExtra("especialidadId", especialidad.id)
+        intent.putExtra("especialidad", especialidad.nombre)
+        intent.putExtra("usuarioId", usuarioId)
         startActivity(intent)
     }
 

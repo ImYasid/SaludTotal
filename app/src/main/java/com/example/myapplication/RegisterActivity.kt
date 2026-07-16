@@ -5,9 +5,16 @@ import android.os.Bundle
 import android.util.Patterns
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.example.myapplication.data.local.SaludTotalDatabase
+import com.example.myapplication.data.local.entity.UserEntity
+import com.example.myapplication.data.repository.SaludTotalRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
@@ -15,6 +22,16 @@ class RegisterActivity : AppCompatActivity() {
 
     // Variable global para guardar la edad calculada desde el calendario
     private var edadCalculadaDelUsuario = 0
+
+    // La fecha "limpia" que se guarda en la base de datos (ej. "16/7/2026"),
+    // separada del texto que se muestra en pantalla (que incluye "(Edad: 27 años)")
+    private var fechaNacimientoParaGuardar = ""
+
+    // Acceso a la base de datos real, en vez de SharedPreferences
+    private val repository by lazy {
+        val db = SaludTotalDatabase.getDatabase(applicationContext)
+        SaludTotalRepository(db.userDao(), db.specialtyDao(), db.doctorDao(), db.appointmentDao())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +77,7 @@ class RegisterActivity : AppCompatActivity() {
 
                 // Mostrar la fecha y la edad en la caja de texto
                 val mesReal = month + 1
+                fechaNacimientoParaGuardar = "$dayOfMonth/$mesReal/$year"
                 etEdad.setText("$dayOfMonth/$mesReal/$year  (Edad: $edadCalculadaDelUsuario años)")
             }, anioActual, mesActual, diaActual)
 
@@ -126,15 +144,33 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Si pasa todas las validaciones, guardamos los datos
-            val sharedPreferences = getSharedPreferences("SaludTotalApp", MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-            editor.putString("usuarioGuardado", cedula)
-            editor.putString("contrasenaGuardada", contrasena)
-            editor.putString("nombreGuardado", nombres)
-            editor.apply()
+            // Si pasa todas las validaciones, guardamos en la base de datos real
+            val nuevoUsuario = UserEntity(
+                documentNumber = cedula,
+                fullName = nombres,
+                birthDate = fechaNacimientoParaGuardar,
+                email = correo,
+                password = contrasena
+            )
 
-            mostrarConfirmacionRegistro(nombres)
+            // ✅ DESPUÉS (Se va al hilo secundario, guarda el dato real, y vuelve a la pantalla)
+            lifecycleScope.launch {
+
+                // 1. Envolvemos la llamada a la base de datos en el hilo IO
+                val resultado = withContext(Dispatchers.IO) {
+                    repository.registrarUsuario(nuevoUsuario)
+                }
+
+                // 2. Respondemos en la pantalla
+                resultado.onSuccess {
+                    mostrarConfirmacionRegistro(nombres)
+                }.onFailure { error ->
+                    // Ahora sí, si falla es porque realmente la cédula existe
+                    tilCedula.error = "Ya existe una cuenta con esta cédula"
+                    etCedula.requestFocus()
+                    btnRegistrarCuenta.isEnabled = true
+                }
+            }
         }
 
         // Lógica del botón de volver

@@ -7,58 +7,81 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.myapplication.data.local.SaludTotalDatabase
+import com.example.myapplication.data.repository.SaludTotalRepository
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WelcomeActivity : AppCompatActivity() {
 
     // Cambia este número por el real de la línea de atención del hospital
     private val telefonoAyuda = "18007258383"
 
+    // 1. Instanciamos el repositorio para poder buscar al usuario
+    private val repository by lazy {
+        val db = SaludTotalDatabase.getDatabase(applicationContext)
+        SaludTotalRepository(db.userDao(), db.specialtyDao(), db.doctorDao(), db.appointmentDao())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
+        // 2. PRIMERO enlazamos las vistas del XML
         val btnAgendarCita = findViewById<MaterialButton>(R.id.btnAgendarCita)
         val btnAyuda = findViewById<MaterialButton>(R.id.btnAyuda)
         val tvSaludo = findViewById<TextView>(R.id.tvSaludo)
 
-        // Navegación inferior con texto visible, en vez del menú ☰ que antes estaba escondido
         val navInicio = findViewById<LinearLayout>(R.id.navInicio)
         val navAgendar = findViewById<LinearLayout>(R.id.navAgendar)
         val navSalir = findViewById<LinearLayout>(R.id.navSalir)
 
-        val sharedPreferences = getSharedPreferences("SaludTotalApp", MODE_PRIVATE)
-        val nombreCompleto = sharedPreferences.getString("nombreGuardado", "Administrador") ?: "Administrador"
-        val primerNombre = nombreCompleto.trim().substringBefore(" ")
+        // 3. Capturamos el ID del paciente que viaja por el Intent
+        val usuarioId = intent.getLongExtra("usuarioId", -1L)
 
-        tvSaludo.text = "Hola, $primerNombre"
+        // 4. LÓGICA INTELIGENTE: Buscamos el nombre real en Room
+        if (usuarioId == -1L) {
+            tvSaludo.text = "Hola, Administrador"
+        } else {
+            lifecycleScope.launch {
+                val user = withContext(Dispatchers.IO) {
+                    repository.obtenerUsuarioPorId(usuarioId)
+                }
 
-        btnAgendarCita.setOnClickListener {
-            irAAgendarCita()
+                if (user != null) {
+                    val primerNombre = user.fullName.trim().substringBefore(" ")
+                    tvSaludo.text = "Hola, $primerNombre"
+                }
+            }
         }
 
-        // El botón de ayuda ahora sí hace algo: abre el marcador con el número ya escrito,
-        // para que la persona solo tenga que tocar "llamar".
+        // 5. Configuración de los botones
+        btnAgendarCita.setOnClickListener {
+            irAAgendarCita(usuarioId)
+        }
+
         btnAyuda.setOnClickListener {
             llamarLineaDeAyuda()
         }
 
-        // Ya estamos en Inicio, así que solo confirma visualmente (no navega a ningún lado)
+        // Navegación inferior
         navInicio.setOnClickListener { }
 
         navAgendar.setOnClickListener {
-            irAAgendarCita()
+            irAAgendarCita(usuarioId)
         }
 
-        // Cerrar sesión ahora pide confirmación: un toque accidental ya no saca a la persona
-        // de golpe sin que lo haya decidido.
         navSalir.setOnClickListener {
             confirmarCierreDeSesion()
         }
     }
 
-    private fun irAAgendarCita() {
+    private fun irAAgendarCita(usuarioId: Long) {
         val intent = Intent(this, SpecialtiesActivity::class.java)
+        intent.putExtra("usuarioId", usuarioId)
         startActivity(intent)
     }
 

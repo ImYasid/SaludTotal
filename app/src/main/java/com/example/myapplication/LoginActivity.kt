@@ -1,20 +1,25 @@
 package com.example.myapplication
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.myapplication.data.local.SaludTotalDatabase
+import com.example.myapplication.data.repository.SaludTotalRepository
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import android.widget.LinearLayout
-import android.widget.TextView
-
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
-    private val telefonoAyuda = "18007258383"
+    private val repository by lazy {
+        val db = SaludTotalDatabase.getDatabase(applicationContext)
+        SaludTotalRepository(db.userDao(), db.specialtyDao(), db.doctorDao(), db.appointmentDao())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
             btnIniciarSesion.isEnabled = false
             btnIniciarSesion.postDelayed({ btnIniciarSesion.isEnabled = true }, 1000)
 
+            // Usamos tus nombres de variables originales
             val usuarioIngresado = etUsuario.text.toString().trim()
             val contrasenaIngresada = etContrasena.text.toString().trim()
 
@@ -57,21 +63,35 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val sharedPreferences = getSharedPreferences("SaludTotalApp", MODE_PRIVATE)
-            val usuarioGuardado = sharedPreferences.getString("usuarioGuardado", "")
-            val contrasenaGuardada = sharedPreferences.getString("contrasenaGuardada", "")
-
+            // Mantenemos el usuario maestro como acceso rápido de prueba/demostración.
             val esUsuarioMaestro = (usuarioIngresado == "1754378097" && contrasenaIngresada == "Yasid123@")
-            val esUsuarioRegistrado = (usuarioIngresado == usuarioGuardado && contrasenaIngresada == contrasenaGuardada && usuarioIngresado.isNotEmpty())
 
-            if (esUsuarioMaestro || esUsuarioRegistrado) {
-                val intent = Intent(this, WelcomeActivity::class.java)
-                startActivity(intent)
-                finish()
-            } else {
-                // Diálogo en vez de Toast: se queda en pantalla hasta que la persona lo cierre,
-                // y le dice exactamente qué hacer a continuación.
-                mostrarErrorLoginPersistente(usuarioGuardado)
+            if (esUsuarioMaestro) {
+                irAWelcome(usuarioId = -1L, nombre = "Administrador")
+                return@setOnClickListener
+            }
+
+            // 2. Iniciamos el proceso asíncrono
+            lifecycleScope.launch {
+
+                // 3. Vamos al hilo secundario a validar las credenciales con "usuarioIngresado"
+                val user = withContext(Dispatchers.IO) {
+                    repository.iniciarSesion(usuarioIngresado, contrasenaIngresada)
+                }
+
+                // 4. Evaluamos el resultado
+                if (user != null) {
+                    // ✅ ÉXITO: El usuario sí existe y la contraseña coincide
+                    irAWelcome(usuarioId = user.id, nombre = user.fullName)
+                } else {
+                    // ❌ ERROR: Credenciales incorrectas.
+                    // Vamos de nuevo al hilo secundario a ver si al menos la cédula existe
+                    val existeLaCedula = withContext(Dispatchers.IO) {
+                        repository.obtenerUsuarioPorCedula(usuarioIngresado) != null
+                    }
+
+                    mostrarErrorLoginPersistente(existeLaCedula)
+                }
             }
         }
 
@@ -83,13 +103,24 @@ class LoginActivity : AppCompatActivity() {
 
         // 4. NUEVO: Botón de ayuda directa, visible desde la primera pantalla que ve el usuario
         btnAyudaLogin.setOnClickListener {
-            llamarLineaDeAyuda()
+            AlertDialog.Builder(this)
+                .setTitle("¿Necesitas ayuda?")
+                .setMessage("Llama a nuestra línea de atención al 1-800-SALUD para que un asesor te ayude a entrar o a agendar tu cita.")
+                .setPositiveButton("Entendido", null)
+                .show()
         }
     }
 
-    private fun mostrarErrorLoginPersistente(usuarioGuardado: String?) {
-        val hayCuentaRegistrada = !usuarioGuardado.isNullOrEmpty()
-        val mensaje = if (hayCuentaRegistrada) {
+    private fun irAWelcome(usuarioId: Long, nombre: String) {
+        val intent = Intent(this, WelcomeActivity::class.java)
+        intent.putExtra("usuarioId", usuarioId)
+        intent.putExtra("nombre", nombre)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun mostrarErrorLoginPersistente(existeLaCedula: Boolean) {
+        val mensaje = if (existeLaCedula) {
             "La cédula o la contraseña no coinciden con tu cuenta.\n\nRevisa que no tengas activado el bloqueo de mayúsculas y vuelve a intentar."
         } else {
             "La cédula o la contraseña no son correctas.\n\nSi es tu primera vez usando la app, toca '¿No tienes cuenta? Regístrate aquí' para crear una cuenta."
@@ -98,17 +129,6 @@ class LoginActivity : AppCompatActivity() {
             .setTitle("No pudimos ingresar")
             .setMessage(mensaje)
             .setPositiveButton("Intentar de nuevo", null)
-            .show()
-    }
-    private fun llamarLineaDeAyuda() {
-        AlertDialog.Builder(this)
-            .setTitle("Línea de ayuda")
-            .setMessage("Vamos a abrir el marcador de tu teléfono con el número de SaludTotal ya escrito. Solo debes tocar el botón de llamar.")
-            .setPositiveButton("Llamar") { _, _ ->
-                val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$telefonoAyuda"))
-                startActivity(intent)
-            }
-            .setNegativeButton("Cancelar", null)
             .show()
     }
 }

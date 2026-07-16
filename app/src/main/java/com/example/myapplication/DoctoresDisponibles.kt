@@ -3,99 +3,123 @@ package com.example.myapplication
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.myapplication.data.local.SaludTotalDatabase
+import com.example.myapplication.data.local.entity.DoctorEntity
+import com.example.myapplication.data.repository.SaludTotalRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.launch
+import java.util.Locale
 
 class DoctoresDisponibles : AppCompatActivity() {
+
+    private val repository by lazy {
+        val db = SaludTotalDatabase.getDatabase(applicationContext)
+        SaludTotalRepository(db.userDao(), db.specialtyDao(), db.doctorDao(), db.appointmentDao())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_doctores_disponibles)
 
-        // 1. Vincular componentes
         val btnVolver = findViewById<MaterialButton>(R.id.btnVolver)
         val tvEspecialidadElegida = findViewById<TextView>(R.id.tvEspecialidadElegida)
+        val contenedorDoctores = findViewById<LinearLayout>(R.id.contenedorDoctores)
+        val tvSinDoctores = findViewById<TextView>(R.id.tvSinDoctores)
 
-        // Tarjetas completas (ahora toda la tarjeta selecciona al médico, no solo el botón chico)
-        val cardDoctor1 = findViewById<MaterialCardView>(R.id.cardDoctor1)
-        val cardDoctor2 = findViewById<MaterialCardView>(R.id.cardDoctor2)
-
-        // Botones Doctor 1
-        val btnMapaDoctor1 = findViewById<MaterialButton>(R.id.btnMapaDoctor1)
-        val btnElegirDoctor1 = findViewById<MaterialButton>(R.id.btnElegirDoctor1)
-
-        // Botones Doctor 2
-        val btnMapaDoctor2 = findViewById<MaterialButton>(R.id.btnMapaDoctor2)
-        val btnElegirDoctor2 = findViewById<MaterialButton>(R.id.btnElegirDoctor2)
-
-        // Navegación Inferior
         val navInicio = findViewById<LinearLayout>(R.id.navInicio)
         val navAgendar = findViewById<LinearLayout>(R.id.navAgendar)
         val navSalir = findViewById<LinearLayout>(R.id.navSalir)
 
-        // ==========================================
-        // 2. Mostrar la especialidad que se eligió en el paso anterior
-        // ==========================================
-        // Antes esta pantalla no sabía qué especialidad había elegido la persona en el Paso 1;
-        // ahora la recibe por Intent y la muestra arriba, para que no pierda el hilo.
-        val especialidadElegida = intent.getStringExtra("especialidad") ?: "Médico General"
-        tvEspecialidadElegida.text = "Especialidad: $especialidadElegida"
+        // ---> Datos reales que llegan desde SpecialtiesActivity <---
+        val especialidadId = intent.getIntExtra("especialidadId", -1)
+        val especialidadNombre = intent.getStringExtra("especialidad") ?: "Médico General"
+        val usuarioId = intent.getLongExtra("usuarioId", -1L)
+        tvEspecialidadElegida.text = "Especialidad: $especialidadNombre"
 
-        // ==========================================
-        // 3. Lógica de Interfaz y Mapas
-        // ==========================================
+        btnVolver.setOnClickListener { finish() }
 
-        btnVolver.setOnClickListener {
-            finish() // Regresa a la pantalla de Especialidades
-        }
+        // ---> Cargar los doctores reales de esta especialidad desde Room <---
+        lifecycleScope.launch {
 
-        // --- Intent Implícito para abrir Google Maps ---
-        btnMapaDoctor1.setOnClickListener {
-            abrirMapa("geo:0,0?q=Av.+Principal+123,+Centro")
-        }
+            // 1. Movemos la consulta de Room al hilo de Entrada/Salida
+            val doctores = withContext(Dispatchers.IO) {
+                repository.obtenerDoctoresPorEspecialidad(especialidadId)
+            }
 
-        btnMapaDoctor2.setOnClickListener {
-            abrirMapa("geo:0,0?q=Calle+Flores+456,+Norte")
-        }
+            if (doctores.isEmpty()) {
+                tvSinDoctores.visibility = android.view.View.VISIBLE
+                return@launch
+            }
 
-        // --- Selección del Médico ---
-        // La tarjeta COMPLETA y el botón "Elegir Médico" hacen lo mismo: así el área de toque
-        // es mucho más grande y perdona un dedo menos preciso.
-        btnElegirDoctor1.setOnClickListener {
-            confirmarDoctor("Dr. Juan Pérez", especialidadElegida, "Av. Principal #123, Centro")
-        }
-        cardDoctor1.setOnClickListener {
-            confirmarDoctor("Dr. Juan Pérez", especialidadElegida, "Av. Principal #123, Centro")
-        }
-
-        btnElegirDoctor2.setOnClickListener {
-            confirmarDoctor("Dra. María González", especialidadElegida, "Calle Flores #456, Norte")
-        }
-        cardDoctor2.setOnClickListener {
-            confirmarDoctor("Dra. María González", especialidadElegida, "Calle Flores #456, Norte")
+            doctores.forEach { doctor ->
+                agregarTarjetaDoctor(contenedorDoctores, doctor, especialidadNombre, usuarioId)
+            }
         }
 
         // ==========================================
-        // 4. Navegación Inferior Consistente
+        // Navegación Inferior Consistente
         // ==========================================
         navInicio.setOnClickListener {
             val intent = Intent(this, WelcomeActivity::class.java)
+            intent.putExtra("usuarioId", usuarioId)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
         }
 
-        // "Agendar" regresa al Paso 1 para elegir otra especialidad, ya que este flujo
-        // sigue siendo parte de "Agendar Cita"
         navAgendar.setOnClickListener {
-            finish()
+            finish() // Regresa al Paso 1 (Especialidades)
         }
 
         navSalir.setOnClickListener {
             confirmarCierreDeSesion()
         }
+    }
+
+    /**
+     * Infla item_doctor_card.xml y lo llena con los datos reales de un doctor:
+     * antes esta pantalla tenía 2 tarjetas idénticas escritas a mano en el XML,
+     * sin importar cuántos doctores hubiera realmente para la especialidad elegida.
+     */
+    private fun agregarTarjetaDoctor(
+        contenedor: LinearLayout,
+        doctor: DoctorEntity,
+        especialidad: String,
+        usuarioId: Long
+    ) {
+        val tarjeta = LayoutInflater.from(this)
+            .inflate(R.layout.item_doctor_card, contenedor, false) as MaterialCardView
+
+        tarjeta.findViewById<TextView>(R.id.tvNombreDoctor).text = doctor.nombre
+        tarjeta.findViewById<TextView>(R.id.tvDireccionDoctor).text = doctor.direccion
+        tarjeta.findViewById<TextView>(R.id.tvDistanciaDoctor).text =
+            String.format(Locale.getDefault(), "%.1f km de distancia", doctor.distanciaKm)
+        tarjeta.contentDescription = "Seleccionar a ${doctor.nombre}"
+
+        val btnMapa = tarjeta.findViewById<MaterialButton>(R.id.btnMapaDoctor)
+        val btnElegir = tarjeta.findViewById<MaterialButton>(R.id.btnElegirDoctor)
+
+        btnMapa.contentDescription = "Ver cómo llegar al consultorio de ${doctor.nombre}"
+        btnMapa.setOnClickListener {
+            abrirMapa("geo:0,0?q=${Uri.encode(doctor.direccion)}")
+        }
+
+        // La tarjeta completa y el botón "Elegir Médico" hacen lo mismo: área de toque más grande
+        val irAHorario = {
+            confirmarDoctor(doctor, especialidad, usuarioId)
+        }
+        btnElegir.setOnClickListener { irAHorario() }
+        tarjeta.setOnClickListener { irAHorario() }
+
+        contenedor.addView(tarjeta)
     }
 
     private fun abrirMapa(coordenadasUri: String) {
@@ -111,11 +135,13 @@ class DoctoresDisponibles : AppCompatActivity() {
         }
     }
 
-    private fun confirmarDoctor(nombreDoctor: String, especialidad: String, direccion: String) {
+    private fun confirmarDoctor(doctor: DoctorEntity, especialidad: String, usuarioId: Long) {
         val intent = Intent(this, Horario::class.java)
-        intent.putExtra("doctor", nombreDoctor)
+        intent.putExtra("usuarioId", usuarioId)
+        intent.putExtra("doctorId", doctor.id)
+        intent.putExtra("doctor", doctor.nombre)
         intent.putExtra("especialidad", especialidad)
-        intent.putExtra("direccion", direccion)
+        intent.putExtra("direccion", doctor.direccion)
         startActivity(intent)
     }
 

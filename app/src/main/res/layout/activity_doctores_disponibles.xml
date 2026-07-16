@@ -112,201 +112,26 @@
                 android:gravity="center"
                 android:layout_marginBottom="24dp"/>
 
-            <!-- Tarjeta Doctor 1: ahora TODA la tarjeta selecciona al médico, no solo el botón pequeño -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardDoctor1"
+            <!-- Antes había 2 MaterialCardView escritas a mano (Dr. Juan Pérez, Dra. María González). -->
+            <!-- Ahora este contenedor está vacío: Kotlin infla una tarjeta (item_doctor_card.xml) -->
+            <!-- por cada doctor real que la base de datos devuelva para la especialidad elegida. -->
+            <LinearLayout
+                android:id="@+id/contenedorDoctores"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:contentDescription="Seleccionar al Doctor Juan Pérez">
+                android:orientation="vertical" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="20dp">
-
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@android:drawable/ic_menu_myplaces"
-                        android:importantForAccessibility="no"
-                        android:layout_marginBottom="12dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dr. Juan Pérez"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="#374151"
-                        android:layout_marginBottom="4dp"/>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="4dp">
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@android:drawable/ic_menu_mylocation"
-                            app:tint="#6B7480"
-                            android:importantForAccessibility="no"
-                            android:layout_marginEnd="4dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Av. Principal #123, Centro"
-                            android:textSize="14sp"
-                            android:textColor="#6B7480"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.5 km de distancia"
-                        android:textSize="14sp"
-                        android:textColor="#3B82F6"
-                        android:layout_marginBottom="16dp"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnMapaDoctor1"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:text="Cómo llegar"
-                            android:textAllCaps="false"
-                            app:icon="@android:drawable/ic_menu_directions"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:contentDescription="Ver cómo llegar al consultorio del Doctor Juan Pérez" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnElegirDoctor1"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:layout_marginStart="4dp"
-                            android:text="Elegir Médico"
-                            android:textAllCaps="false"
-                            app:backgroundTint="#3B82F6" />
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Tarjeta Doctor 2 (misma estructura, misma tarjeta completa tocable) -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardDoctor2"
+            <!-- Mensaje si esta especialidad todavía no tiene doctores cargados -->
+            <TextView
+                android:id="@+id/tvSinDoctores"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:contentDescription="Seleccionar a la Doctora María González">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="20dp">
-
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@android:drawable/ic_menu_myplaces"
-                        android:importantForAccessibility="no"
-                        android:layout_marginBottom="12dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dra. María González"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="#374151"
-                        android:layout_marginBottom="4dp"/>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="4dp">
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@android:drawable/ic_menu_mylocation"
-                            app:tint="#6B7480"
-                            android:importantForAccessibility="no"
-                            android:layout_marginEnd="4dp"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Calle Flores #456, Norte"
-                            android:textSize="14sp"
-                            android:textColor="#6B7480"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1.2 km de distancia"
-                        android:textSize="14sp"
-                        android:textColor="#3B82F6"
-                        android:layout_marginBottom="16dp"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnMapaDoctor2"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:text="Cómo llegar"
-                            android:textAllCaps="false"
-                            app:icon="@android:drawable/ic_menu_directions"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:contentDescription="Ver cómo llegar al consultorio de la Doctora María González" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnElegirDoctor2"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:layout_marginStart="4dp"
-                            android:text="Elegir Médico"
-                            android:textAllCaps="false"
-                            app:backgroundTint="#3B82F6" />
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                android:text="Todavía no hay médicos disponibles para esta especialidad."
+                android:textColor="#A0A8B1"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:padding="24dp"
+                android:visibility="gone"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

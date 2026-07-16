@@ -55,6 +55,8 @@ class Horario : AppCompatActivity() {
         val especialidad = intent.getStringExtra("especialidad") ?: "Consulta"
         val doctor = intent.getStringExtra("doctor") ?: "tu médico"
         val direccion = intent.getStringExtra("direccion") ?: "Consultorio principal"
+        val usuarioId = intent.getLongExtra("usuarioId", -1L)
+        val doctorId = intent.getIntExtra("doctorId", -1)
         tvResumenCita.text = "$especialidad · $doctor"
 
         // ---> Generar los próximos días disponibles DE VERDAD, desde la fecha actual <---
@@ -80,21 +82,27 @@ class Horario : AppCompatActivity() {
         btnVolver.setOnClickListener { finish() }
 
         btnConfirmarCita.setOnClickListener {
-            val fechaTexto = diaSeleccionadoDatos?.let { formatearFechaCompleta(it.fecha) } ?: ""
+            val diaElegido = diaSeleccionadoDatos
             val horaTexto = horaSeleccionadaTexto ?: ""
+            val fechaTexto = diaElegido?.let { formatearFechaCompleta(it.fecha) } ?: ""
+            val fechaHoraMillis = if (diaElegido != null) calcularFechaHoraMillis(diaElegido.fecha, horaTexto) else System.currentTimeMillis()
 
             val intent = Intent(this, RevisarCita::class.java)
+            intent.putExtra("usuarioId", usuarioId)
+            intent.putExtra("doctorId", doctorId)
             intent.putExtra("especialidad", especialidad)
             intent.putExtra("doctor", doctor)
             intent.putExtra("direccion", direccion)
             intent.putExtra("fecha", fechaTexto)
             intent.putExtra("hora", horaTexto)
+            intent.putExtra("fechaHoraMillis", fechaHoraMillis)
             startActivity(intent)
         }
 
         // Navegación Inferior (antes solo "Inicio" estaba conectado)
         findViewById<LinearLayout>(R.id.navInicio).setOnClickListener {
             val intent = Intent(this, WelcomeActivity::class.java)
+            intent.putExtra("usuarioId", usuarioId)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
         }
@@ -253,6 +261,29 @@ class Horario : AppCompatActivity() {
 
     private fun formatearFechaCompleta(fecha: Calendar): String {
         return formatearBotonDia(fecha).replace("\n", " ")
+    }
+
+    /**
+     * Combina el día elegido con la hora elegida ("9:00 AM") y devuelve el instante real
+     * en milisegundos. Esto es lo que le permite a CitaExitosa crear un evento de calendario
+     * con la hora correcta, en vez de un evento sin hora definida.
+     */
+    private fun calcularFechaHoraMillis(dia: Calendar, horaTexto: String): Long {
+        return try {
+            val formatoHora = SimpleDateFormat("h:mm a", Locale.US)
+            val horaParseada = formatoHora.parse(horaTexto)
+            val calendarioHora = Calendar.getInstance()
+            calendarioHora.time = horaParseada!!
+
+            val resultado = dia.clone() as Calendar
+            resultado.set(Calendar.HOUR_OF_DAY, calendarioHora.get(Calendar.HOUR_OF_DAY))
+            resultado.set(Calendar.MINUTE, calendarioHora.get(Calendar.MINUTE))
+            resultado.set(Calendar.SECOND, 0)
+            resultado.set(Calendar.MILLISECOND, 0)
+            resultado.timeInMillis
+        } catch (e: Exception) {
+            dia.timeInMillis
+        }
     }
 
     private fun dpAPx(dp: Int): Int {

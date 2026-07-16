@@ -43,6 +43,7 @@ class CitaExitosa : AppCompatActivity() {
         fecha = intent.getStringExtra("fecha") ?: ""
         hora = intent.getStringExtra("hora") ?: ""
         fechaHoraMillis = intent.getLongExtra("fechaHoraMillis", 0L)
+        val usuarioId = intent.getLongExtra("usuarioId", -1L)
 
         // Si por algún error de navegación se llega aquí sin datos, avisamos y regresamos
         // en vez de mostrar un resumen vacío o inventado.
@@ -72,6 +73,7 @@ class CitaExitosa : AppCompatActivity() {
         // Acción: Volver al Dashboard borrando el historial de pantallas
         btnInicio.setOnClickListener {
             val intent = Intent(this, WelcomeActivity::class.java)
+            intent.putExtra("usuarioId", usuarioId)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
