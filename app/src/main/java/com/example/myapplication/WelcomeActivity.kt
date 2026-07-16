@@ -30,8 +30,9 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-        // 2. PRIMERO enlazamos las vistas del XML
+        // 2. PRIMERO enlazamos las vistas del XML (Ahora sí, la pantalla ya existe)
         val btnAgendarCita = findViewById<MaterialButton>(R.id.btnAgendarCita)
+        val btnMisCitas = findViewById<MaterialButton>(R.id.btnMisCitas) // ✅ AQUÍ ESTÁ EN EL LUGAR CORRECTO
         val btnAyuda = findViewById<MaterialButton>(R.id.btnAyuda)
         val tvSaludo = findViewById<TextView>(R.id.tvSaludo)
 
@@ -61,6 +62,12 @@ class WelcomeActivity : AppCompatActivity() {
         // 5. Configuración de los botones
         btnAgendarCita.setOnClickListener {
             irAAgendarCita(usuarioId)
+        }
+
+        btnMisCitas.setOnClickListener {
+            val intent = Intent(this, MisCitasActivity::class.java)
+            intent.putExtra("usuarioId", usuarioId)
+            startActivity(intent)
         }
 
         btnAyuda.setOnClickListener {

@@ -69,6 +69,19 @@
                 android:elevation="8dp"
                 android:contentDescription="Botón para agendar una cita médica nueva"/>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMisCitas"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="Mis Citas"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:textColor="@color/salud_blue"
+                app:backgroundTint="#EAF0FF"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="16dp" />
+
             <!-- Ayuda por llamada, ahora con texto que explica qué pasa al tocarlo -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAyuda"

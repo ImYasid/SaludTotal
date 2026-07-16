@@ -47,6 +47,9 @@
         <activity
             android:name=".SpecialtiesActivity"
             android:exported="false" />
+        <activity
+            android:name=".MisCitasActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
