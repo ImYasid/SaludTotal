@@ -82,8 +82,6 @@ class CitaExitosa : AppCompatActivity() {
     /**
      * Usa un Intent implícito para abrir el calendario de Google (o el predeterminado)
      * e inserta un nuevo evento con la especialidad, el doctor y el lugar reales.
-     * Ahora también incluye la hora exacta (fechaHoraMillis), que antes no se enviaba:
-     * sin eso, el calendario podía crear el evento sin horario definido.
      */
     private fun abrirCalendario() {
         val duracionEventoMs = 30 * 60 * 1000 // 30 minutos de duración estimada
@@ -98,31 +96,33 @@ class CitaExitosa : AppCompatActivity() {
             .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, horaInicio)
             .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, horaFin)
 
-        // Evita que la app crashee si el celular no tiene calendario
-        if (intent.resolveActivity(packageManager) != null) {
+        try {
+            // Intentamos abrir el calendario directamente
             startActivity(intent)
-        } else {
+        } catch (e: android.content.ActivityNotFoundException) {
+            // Plan B si falla
             Toast.makeText(this, "No encontramos una app de calendario instalada.", Toast.LENGTH_LONG).show()
         }
     }
 
     /**
      * Usa un URI especial de WhatsApp (wa.me) para abrir un chat con los datos reales de la cita.
-     * Si no se pone número telefónico, WhatsApp abre la lista de contactos para que
-     * el usuario elija a quién enviarlo (por ejemplo, a un hijo o a sí mismo).
      */
     private fun abrirWhatsApp() {
         val mensaje = "¡Hola! Te comparto los datos de mi cita médica:\n" +
                 "$doctor - $especialidad\n" +
                 "$fecha, $hora\n" +
                 direccion
+
+        // Usamos la API web de WhatsApp, súper segura y compatible con todos los Android
         val uri = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(mensaje)}")
         val intent = Intent(Intent.ACTION_VIEW, uri)
 
-        if (intent.resolveActivity(packageManager) != null) {
+        try {
+            // El celular detectará el enlace y abrirá WhatsApp automáticamente
             startActivity(intent)
-        } else {
-            Toast.makeText(this, "No encontramos WhatsApp instalado en este teléfono.", Toast.LENGTH_LONG).show()
+        } catch (e: android.content.ActivityNotFoundException) {
+            Toast.makeText(this, "No pudimos abrir WhatsApp.", Toast.LENGTH_LONG).show()
         }
     }
 }

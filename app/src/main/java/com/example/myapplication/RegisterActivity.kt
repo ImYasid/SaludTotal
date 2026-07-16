@@ -17,7 +17,6 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-
 class RegisterActivity : AppCompatActivity() {
 
     // Variable global para guardar la edad calculada desde el calendario
@@ -42,12 +41,14 @@ class RegisterActivity : AppCompatActivity() {
         val tilEdad = findViewById<TextInputLayout>(R.id.tilEdad)
         val tilCorreo = findViewById<TextInputLayout>(R.id.tilCorreo)
         val tilContrasena = findViewById<TextInputLayout>(R.id.tilContrasenaRegistro)
+        val tilConfirmarContrasena = findViewById<TextInputLayout>(R.id.tilConfirmarContrasena) // <-- NUEVO
 
         val etCedula = findViewById<TextInputEditText>(R.id.etCedula)
         val etNombres = findViewById<TextInputEditText>(R.id.etNombres)
         val etEdad = findViewById<TextInputEditText>(R.id.etEdadRegistro)
         val etCorreo = findViewById<TextInputEditText>(R.id.etCorreoRegistro)
         val etContrasena = findViewById<TextInputEditText>(R.id.etContrasenaRegistro)
+        val etConfirmarContrasena = findViewById<TextInputEditText>(R.id.etConfirmarContrasena) // <-- NUEVO
 
         val btnRegistrarCuenta = findViewById<MaterialButton>(R.id.btnRegistrarCuenta)
         val btnVolverLogin = findViewById<MaterialButton>(R.id.btnVolverLogin)
@@ -57,10 +58,9 @@ class RegisterActivity : AppCompatActivity() {
         etNombres.setOnClickListener { tilNombres.error = null }
         etCorreo.setOnClickListener { tilCorreo.error = null }
         etContrasena.setOnClickListener { tilContrasena.error = null }
+        etConfirmarContrasena.setOnClickListener { tilConfirmarContrasena.error = null } // <-- NUEVO
 
         // ---> LÓGICA DEL CALENDARIO (DatePicker) <---
-        // El campo de edad ahora es de solo lectura (ver XML): la única forma de llenarlo
-        // es con este calendario, así se evita que alguien escriba una fecha inválida a mano.
         etEdad.setOnClickListener {
             tilEdad.error = null
             val calendario = Calendar.getInstance()
@@ -96,14 +96,16 @@ class RegisterActivity : AppCompatActivity() {
             val nombres = etNombres.text.toString().trim()
             val correo = etCorreo.text.toString().trim()
             val contrasena = etContrasena.text.toString().trim()
+            val confirmarContrasena = etConfirmarContrasena.text.toString().trim() // <-- NUEVO
 
             tilCedula.error = null
             tilNombres.error = null
             tilEdad.error = null
             tilCorreo.error = null
             tilContrasena.error = null
+            tilConfirmarContrasena.error = null // <-- NUEVO
 
-            // Cada validación apunta al campo exacto con el problema, en vez de un mensaje genérico
+            // Validaciones secuenciales
             if (cedula.isEmpty()) {
                 tilCedula.error = "Escribe tu número de cédula"
                 etCedula.requestFocus()
@@ -144,6 +146,18 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // ---> NUEVA VALIDACIÓN: Confirmar Contraseña <---
+            if (confirmarContrasena.isEmpty()) {
+                tilConfirmarContrasena.error = "Vuelve a escribir tu contraseña"
+                etConfirmarContrasena.requestFocus()
+                return@setOnClickListener
+            }
+            if (contrasena != confirmarContrasena) {
+                tilConfirmarContrasena.error = "Las contraseñas no coinciden"
+                etConfirmarContrasena.requestFocus()
+                return@setOnClickListener
+            }
+
             // Si pasa todas las validaciones, guardamos en la base de datos real
             val nuevoUsuario = UserEntity(
                 documentNumber = cedula,
@@ -153,19 +167,14 @@ class RegisterActivity : AppCompatActivity() {
                 password = contrasena
             )
 
-            // ✅ DESPUÉS (Se va al hilo secundario, guarda el dato real, y vuelve a la pantalla)
             lifecycleScope.launch {
-
-                // 1. Envolvemos la llamada a la base de datos en el hilo IO
                 val resultado = withContext(Dispatchers.IO) {
                     repository.registrarUsuario(nuevoUsuario)
                 }
 
-                // 2. Respondemos en la pantalla
                 resultado.onSuccess {
                     mostrarConfirmacionRegistro(nombres)
                 }.onFailure { error ->
-                    // Ahora sí, si falla es porque realmente la cédula existe
                     tilCedula.error = "Ya existe una cuenta con esta cédula"
                     etCedula.requestFocus()
                     btnRegistrarCuenta.isEnabled = true
@@ -173,14 +182,11 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-        // Lógica del botón de volver
         btnVolverLogin.setOnClickListener {
             finish()
         }
     }
 
-    // Diálogo que se queda en pantalla hasta que la persona lo cierre a propósito,
-    // en vez de un Toast que puede desaparecer antes de que alcance a leerlo.
     private fun mostrarConfirmacionRegistro(nombres: String) {
         val mensaje = if (edadCalculadaDelUsuario >= 60) {
             "¡Listo, $nombres! Tu cuenta fue creada con éxito.\n\nActivamos el Modo Fácil para ti, con letras más grandes y menos pasos."

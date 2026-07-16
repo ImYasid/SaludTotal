@@ -79,4 +79,9 @@ class SaludTotalRepository(
     suspend fun cancelarCita(citaId: Int) {
         appointmentDao.actualizarEstado(citaId, "Cancelada")
     }
+
+    suspend fun eliminarCita(citaId: Int) {
+        appointmentDao.eliminar(citaId)
+    }
+
 }

@@ -73,12 +73,14 @@ class RevisarCita : AppCompatActivity() {
         btnCorregir.setOnClickListener { finish() }
 
         // ---> Confirmar: ahora sí se guarda la cita en la base de datos real <---
+        // ---> Confirmar: ahora sí se guarda la cita en la base de datos real <---
         btnConfirmar.setOnClickListener {
             btnConfirmar.isEnabled = false // evita doble toque mientras se guarda
 
             val nuevaCita = AppointmentEntity(
                 usuarioId = usuarioId,
                 doctorId = doctorId,
+                doctorNombre = doctor, // <--- ¡AQUÍ ESTÁ LA LÍNEA QUE FALTABA!
                 especialidadNombre = especialidad,
                 direccion = direccion ?: "Consultorio principal",
                 fechaTexto = fecha,
@@ -110,5 +112,6 @@ class RevisarCita : AppCompatActivity() {
                 }
             }
         }
+
     }
 }

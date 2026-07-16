@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
         DoctorEntity::class,
         AppointmentEntity::class
     ],
-    version = 1,
+    version = 2, // <--- ¡SOLO CAMBIA ESTE 1 POR UN 2!
     exportSchema = false
 )
 abstract class SaludTotalDatabase : RoomDatabase() {

@@ -1,11 +1,11 @@
 package com.example.myapplication
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -16,7 +16,9 @@ import com.example.myapplication.data.local.entity.DoctorEntity
 import com.example.myapplication.data.repository.SaludTotalRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class DoctoresDisponibles : AppCompatActivity() {
@@ -56,7 +58,7 @@ class DoctoresDisponibles : AppCompatActivity() {
             }
 
             if (doctores.isEmpty()) {
-                tvSinDoctores.visibility = android.view.View.VISIBLE
+                tvSinDoctores.visibility = View.VISIBLE
                 return@launch
             }
 
@@ -85,9 +87,7 @@ class DoctoresDisponibles : AppCompatActivity() {
     }
 
     /**
-     * Infla item_doctor_card.xml y lo llena con los datos reales de un doctor:
-     * antes esta pantalla tenía 2 tarjetas idénticas escritas a mano en el XML,
-     * sin importar cuántos doctores hubiera realmente para la especialidad elegida.
+     * Infla item_doctor_card.xml y lo llena con los datos reales de un doctor
      */
     private fun agregarTarjetaDoctor(
         contenedor: LinearLayout,
@@ -108,8 +108,10 @@ class DoctoresDisponibles : AppCompatActivity() {
         val btnElegir = tarjeta.findViewById<MaterialButton>(R.id.btnElegirDoctor)
 
         btnMapa.contentDescription = "Ver cómo llegar al consultorio de ${doctor.nombre}"
+
+        // Clic para abrir el mapa enviando la dirección limpia
         btnMapa.setOnClickListener {
-            abrirMapa("geo:0,0?q=${Uri.encode(doctor.direccion)}")
+            abrirMapa(doctor.direccion)
         }
 
         // La tarjeta completa y el botón "Elegir Médico" hacen lo mismo: área de toque más grande
@@ -122,14 +124,19 @@ class DoctoresDisponibles : AppCompatActivity() {
         contenedor.addView(tarjeta)
     }
 
-    private fun abrirMapa(coordenadasUri: String) {
-        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(coordenadasUri))
-        if (mapIntent.resolveActivity(packageManager) != null) {
+    /**
+     * Abre Google Maps usando un enlace web estándar para evitar bloqueos de seguridad en Android 11+
+     */
+    private fun abrirMapa(direccion: String) {
+        val mapaWebUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(direccion)}")
+        val mapIntent = Intent(Intent.ACTION_VIEW, mapaWebUri)
+
+        try {
             startActivity(mapIntent)
-        } else {
+        } catch (e: ActivityNotFoundException) {
             AlertDialog.Builder(this)
-                .setTitle("Aplicación no encontrada")
-                .setMessage("No tienes instalada ninguna aplicación de mapas (como Google Maps) para ver la dirección.")
+                .setTitle("Mapa no disponible")
+                .setMessage("No pudimos abrir la ubicación de: $direccion")
                 .setPositiveButton("Entendido", null)
                 .show()
         }
