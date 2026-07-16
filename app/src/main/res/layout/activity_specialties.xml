@@ -156,14 +156,14 @@
                     android:layout_column="0"
                     android:layout_columnWeight="1"
                     android:layout_margin="8dp"
-                    android:text="Médico\nGeneral"
+                    android:text="Médico General"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:backgroundTint="#3B82F6"
                     app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_search"
+                    app:icon="@drawable/outline_medical_services_24"
                     app:iconGravity="textTop"
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF" />
@@ -181,7 +181,7 @@
                     android:textColor="#FFFFFF"
                     app:backgroundTint="#EF4444"
                     app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_view"
+                    app:icon="@drawable/outline_cardiology_24"
                     app:iconGravity="textTop"
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
@@ -199,8 +199,7 @@
                     android:textColor="#FFFFFF"
                     app:backgroundTint="#F97316"
                     app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_close_clear_cancel"
-                    app:iconGravity="textTop"
+                    app:icon="@drawable/outline_accessibility_new_24"                    app:iconGravity="textTop"
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
 
@@ -217,7 +216,7 @@
                     android:textColor="#FFFFFF"
                     app:backgroundTint="#A855F7"
                     app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_camera"
+                    app:icon="@drawable/outline_visibility_24"
                     app:iconGravity="textTop"
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
@@ -235,7 +234,7 @@
                     android:textColor="#FFFFFF"
                     app:backgroundTint="#6366F1"
                     app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_info_details"
+                    app:icon="@drawable/outline_neurology_24"
                     app:iconGravity="textTop"
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
@@ -253,7 +252,7 @@
                     android:textColor="#FFFFFF"
                     app:backgroundTint="#22C55E"
                     app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_edit"
+                    app:icon="@drawable/outline_vaccines_24"
                     app:iconGravity="textTop"
                     app:iconSize="36dp"
                     app:iconTint="#FFFFFF"/>
@@ -299,12 +298,12 @@
             android:focusable="true"
             android:contentDescription="Ir al Inicio">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🏠"
-                android:textSize="26sp"
-                android:gravity="center"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_home_filled_24"
+                android:contentDescription="@null"
+                app:tint="#2C6BFE" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -328,12 +327,12 @@
             android:focusable="true"
             android:contentDescription="Ir a Agendar Cita">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📅"
-                android:textSize="26sp"
-                android:gravity="center"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_calendar_month_24"
+                android:contentDescription="@null"
+                app:tint="#2C6BFE" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -358,12 +357,12 @@
             android:focusable="true"
             android:contentDescription="Cerrar Sesión">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🚪"
-                android:textSize="26sp"
-                android:gravity="center"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/outline_logout_24"
+                android:contentDescription="@null"
+                app:tint="#2C6BFE" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -61,7 +61,7 @@
                 android:textAllCaps="false"
                 app:backgroundTint="#2C6BFE"
                 app:cornerRadius="16dp"
-                app:icon="@android:drawable/ic_menu_my_calendar"
+                app:icon="@drawable/baseline_calendar_month_24"
                 app:iconGravity="textTop"
                 app:iconSize="52dp"
                 app:iconTint="#FFFFFF"
@@ -113,12 +113,12 @@
             android:focusable="true"
             android:contentDescription="Ir al Inicio">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🏠"
-                android:textSize="26sp"
-                android:gravity="center"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_home_filled_24"
+                android:contentDescription="@null"
+                app:tint="#2C6BFE" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -143,12 +143,12 @@
             android:focusable="true"
             android:contentDescription="Ir a Agendar Cita">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📅"
-                android:textSize="26sp"
-                android:gravity="center"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_calendar_month_24"
+                android:contentDescription="@null"
+                app:tint="#2C6BFE" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -172,12 +172,12 @@
             android:focusable="true"
             android:contentDescription="Cerrar Sesión">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🚪"
-                android:textSize="26sp"
-                android:gravity="center"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/outline_logout_24"
+                android:contentDescription="@null"
+                app:tint="#2C6BFE" />
 
             <TextView
                 android:layout_width="wrap_content"
