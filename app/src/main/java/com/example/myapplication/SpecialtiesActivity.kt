@@ -47,7 +47,7 @@ class SpecialtiesActivity : AppCompatActivity() {
 
         botonesEspecialidad.forEach { (boton, nombreEspecialidad) ->
             boton.setOnClickListener {
-                confirmarEspecialidad(nombreEspecialidad)
+                irADoctoresDisponibles(nombreEspecialidad)
             }
         }
 
@@ -91,12 +91,10 @@ class SpecialtiesActivity : AppCompatActivity() {
         }
     }
 
-    private fun confirmarEspecialidad(nombreEspecialidad: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Especialidad seleccionada")
-            .setMessage("Elegiste: $nombreEspecialidad.\n\nEl siguiente paso (elegir fecha y doctor) estará disponible pronto.")
-            .setPositiveButton("Entendido", null)
-            .show()
+    private fun irADoctoresDisponibles(nombreEspecialidad: String) {
+        val intent = Intent(this, DoctoresDisponibles::class.java)
+        intent.putExtra("especialidad", nombreEspecialidad)
+        startActivity(intent)
     }
 
     private fun confirmarCierreDeSesion() {

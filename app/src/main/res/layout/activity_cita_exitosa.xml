@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F0FDF4">
+    <!-- Fondo verde que ahora sí cubre toda la pantalla hasta los bordes -->
+
+    <!-- Cambiado a NestedScrollView para mejor compatibilidad -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <!-- Aquí va el padding que antes estaba en la raíz -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp">
+
+            <!-- Círculo de Éxito con el estetoscopio -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                app:cardCornerRadius="48dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#D1FAE5"
+                app:strokeWidth="4dp"
+                app:strokeColor="#A7F3D0"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/outline_stethoscope_check_24"
+                    app:tint="#059669"
+                    android:importantForAccessibility="no" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¡Listo!"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColor="#064E3B"/>
+
+            <!-- Oscurecí un poco este texto para que se lea mejor sobre el fondo claro -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tu cita está guardada"
+                android:textSize="18sp"
+                android:textColor="#059669"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- Tarjeta de Resumen idéntica a la estética de la pantalla anterior -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E2E8F0"
+                android:layout_marginBottom="32dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Resumen de tu cita"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="#1F2937"
+                        android:layout_marginBottom="20dp"/>
+
+                    <!-- Dato: Especialidad -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Especialidad y médico" android:textSize="13sp" android:textColor="#64748B"/>
+                        <TextView android:id="@+id/tvEspecialidadValor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando..." android:textSize="16sp" android:textStyle="bold" android:textColor="#1F2937" android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+
+                    <!-- Dato: Fecha y Hora -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fecha y hora" android:textSize="13sp" android:textColor="#64748B"/>
+                        <TextView android:id="@+id/tvFechaHoraValor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando..." android:textSize="16sp" android:textStyle="bold" android:textColor="#1F2937" android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+
+                    <!-- Dato: Ubicación -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ubicación" android:textSize="13sp" android:textColor="#64748B"/>
+                        <TextView android:id="@+id/tvUbicacionValor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando..." android:textSize="16sp" android:textStyle="bold" android:textColor="#1F2937" android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿Qué quieres hacer ahora?"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#1F2937"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Botones de Acción -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCalendario"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Anotar en mi calendario\nAgregar recordatorio automático"
+                android:textAllCaps="false"
+                app:cornerRadius="16dp"
+                app:backgroundTint="#3B82F6"
+                app:icon="@drawable/baseline_calendar_month_24"
+                android:contentDescription="Agregar esta cita al calendario del teléfono"
+                android:layout_marginBottom="12dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnWhatsApp"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Enviarme recordatorio por WhatsApp"
+                android:textAllCaps="false"
+                app:cornerRadius="16dp"
+                app:backgroundTint="#10B981"
+                app:icon="@android:drawable/ic_menu_share"
+                android:contentDescription="Enviar los datos de la cita por WhatsApp"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Espaciador flexible para asegurar que el botón de inicio tenga aire si la pantalla es alta -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="16dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnInicio"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Volver al inicio"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                app:cornerRadius="16dp"
+                android:textColor="#64748B"
+                app:strokeColor="#CBD5E1"
+                app:strokeWidth="1dp"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

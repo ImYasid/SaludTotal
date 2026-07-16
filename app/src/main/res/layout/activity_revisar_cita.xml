@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFBFF">
+
+    <!-- Usamos la misma estructura de ScrollView que en tu código base -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <!-- Aquí está el padding="24dp" exacto que hace que todo se vea bien -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Botón Volver (con tu misma estructura de RelativeLayout) -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVolver"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_alignParentStart="true"
+                    android:text="Volver"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:textColor="#424D59"
+                    app:icon="@android:drawable/ic_menu_revert"
+                    app:iconTint="#424D59"
+                    android:contentDescription="Volver a elegir fecha y hora" />
+            </RelativeLayout>
+
+            <!-- Encabezado -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Revisa tu cita"
+                android:textColor="#1F2937"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Confirma que los datos sean correctos"
+                android:textColor="#6B7480"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- Tarjeta de Resumen -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/tu_cita_details_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E5E7EB">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="32dp"
+                    android:paddingBottom="24dp"
+                    android:gravity="center_horizontal">
+
+                    <!-- Ícono Superior -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        app:cardCornerRadius="36dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="#F0F5FF"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#D6E4FF">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/baseline_calendar_month_24"
+                            android:importantForAccessibility="no"
+                            app:tint="#2C6BFE" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Título de la especialidad -->
+                    <TextView
+                        android:id="@+id/tvTituloEspecialidad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tu cita de Cardiología"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#1F2937"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="20dp"/>
+
+                    <!-- Separador -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F3F4F6"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginHorizontal="24dp"/>
+
+                    <!-- Contenedor de los datos -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="24dp">
+
+                        <!-- Fila Doctor -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#9CA3AF" android:importantForAccessibility="no"/>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="16dp">
+                                <TextView android:id="@+id/tv_label_especialista" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Especialista" android:textColor="#6B7480" android:textSize="13sp"/>
+                                <TextView android:id="@+id/tvDoctor" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Dr. Juan Pérez" android:textColor="#1F2937" android:textSize="16sp" android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Fila Consultorio -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_mylocation" app:tint="#9CA3AF" android:importantForAccessibility="no"/>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="16dp">
+                                <TextView android:id="@+id/tv_label_ubicacion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ubicación" android:textColor="#6B7480" android:textSize="13sp"/>
+                                <TextView android:id="@+id/tvConsultorio" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Av. Principal #123, Centro" android:textColor="#1F2937" android:textSize="16sp" android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Fila Fecha -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/baseline_calendar_month_24" app:tint="#9CA3AF" android:importantForAccessibility="no"/>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="16dp">
+                                <TextView android:id="@+id/tv_label_fecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fecha" android:textColor="#6B7480" android:textSize="13sp"/>
+                                <TextView android:id="@+id/tvFecha" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Jueves 16 de Julio" android:textColor="#1F2937" android:textSize="16sp" android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Fila Hora -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#9CA3AF" android:importantForAccessibility="no"/>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="16dp">
+                                <TextView android:id="@+id/tv_label_hora" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hora" android:textColor="#6B7480" android:textSize="13sp"/>
+                                <TextView android:id="@+id/tvHora" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="11:00 AM" android:textColor="#1F2937" android:textSize="16sp" android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Este View empuja los botones hacia abajo si la pantalla es muy alta -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="24dp"/>
+
+            <!-- Botón Primario: Confirmar (Restaurado a 64dp como en tu código) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmar"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Sí, agendar mi cita"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                app:cornerRadius="16dp"
+                app:backgroundTint="#10B981"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Botón Secundario: Corregir -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCorregir"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="No, quiero corregir"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                app:cornerRadius="16dp"
+                android:textColor="#EF4444"
+                app:strokeColor="#FCA5A5"
+                app:strokeWidth="1dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

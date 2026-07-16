@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFBFF">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Botón Volver -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVolver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_alignParentStart="true"
+                    android:text="Volver"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:textColor="#424D59"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    app:icon="@android:drawable/ic_menu_revert"
+                    app:iconTint="#424D59"
+                    android:contentDescription="Volver a elegir médico" />
+            </RelativeLayout>
+
+            <!-- Barra de Progreso (Paso 3) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Paso 3 de 3: Fecha y Hora"
+                    android:textColor="@color/salud_blue"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/barraProgreso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:progress="100"
+                    app:trackColor="#E2E8F0"
+                    app:indicatorColor="@color/salud_teal"
+                    app:trackThickness="12dp"
+                    app:trackCornerRadius="6dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿Cuándo puedes venir?"
+                android:textColor="#424D59"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- NUEVO: recuerda con quién y para qué especialidad es la cita -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/salud_teal">
+
+                <TextView
+                    android:id="@+id/tvResumenCita"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cardiología · Dr. Juan Pérez"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Selecciona día y hora"
+                android:textColor="#9CA3AF"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Sección: Días -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/baseline_calendar_month_24"
+                    android:importantForAccessibility="no"
+                    app:tint="#2C6BFE"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Selecciona el día"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#424D59"/>
+            </LinearLayout>
+
+            <!-- Antes tenía 4 botones con fechas escritas a mano (ej. "11 de Mayo") -->
+            <!-- Ahora este GridLayout está vacío: Kotlin lo llena con los próximos días -->
+            <!-- disponibles de verdad, calculados desde la fecha actual del teléfono. -->
+            <GridLayout
+                android:id="@+id/gridDias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Sección de Horas: también se genera dinámicamente, así que empieza -->
+            <!-- oculta con un mensaje-guía hasta que el usuario elija un día. -->
+            <TextView
+                android:id="@+id/tvElijeDiaPrimero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="👆 Elige un día para ver las horas disponibles"
+                android:textColor="#A0A8B1"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:id="@+id/contenedorHoras"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Mañana -->
+                <TextView
+                    android:id="@+id/tvTituloManana"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mañana"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#424D59"
+                    android:layout_marginBottom="8dp"/>
+
+                <GridLayout
+                    android:id="@+id/gridManana"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Tarde -->
+                <TextView
+                    android:id="@+id/tvTituloTarde"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tarde"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#424D59"
+                    android:layout_marginBottom="8dp"/>
+
+                <GridLayout
+                    android:id="@+id/gridTarde"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Se muestra solo si un día (ej. sábado) no tiene horas en la tarde -->
+                <TextView
+                    android:id="@+id/tvSinHorasTarde"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No hay horas disponibles en la tarde este día"
+                    android:textColor="#A0A8B1"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <!-- BOTÓN FINAL PARA CONFIRMAR LA CITA -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmarCita"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Confirmar Cita"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                app:cornerRadius="16dp"
+                app:backgroundTint="#2C6BFE"
+                android:layout_marginBottom="16dp"
+                android:enabled="false"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Barra de navegación inferior -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:elevation="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="8dp">
+
+        <LinearLayout
+            android:id="@+id/navInicio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Ir al Inicio">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_home_filled_24"
+                android:importantForAccessibility="no"
+                app:tint="#2C6BFE" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inicio"
+                android:textSize="14sp"
+                android:textColor="#6B7480" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navAgendar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Volver a elegir especialidad">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_calendar_month_24"
+                android:importantForAccessibility="no"
+                app:tint="#2C6BFE" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Agendar"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2C6BFE"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navSalir"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingVertical="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Cerrar sesión">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/outline_logout_24"
+                android:importantForAccessibility="no"
+                app:tint="#2C6BFE" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Salir"
+                android:textSize="14sp"
+                android:textColor="#6B7480" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
