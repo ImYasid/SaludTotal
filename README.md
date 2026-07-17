@@ -6,20 +6,15 @@ Proyecto desarrollado para la materia de **Aplicaciones Móviles** — **Grupo 7
 
 ---
 
-## 👥 Integrantes del Grupo 7
+## 👥 Integrantes del Grupo
 
-| Nombres |
-|---|
-| _Bravo Leandro_ |
-| _Enriquez Michael_ |
-| _Hernandez Mark_ |
-| _Jimenez Yasid_ | 
+Bravo Leandro, Enriquez Michael, Hernandez Mark y Jimenez Yasid 
 
 ---
 
 ## 📱 Descripción del Proyecto
 
-**SaludTotal** es una aplicación móvil que permite a los usuarios registrarse, iniciar sesión y agendar citas médicas seleccionando una especialidad, pensada para que **cualquier persona, sin importar su edad o experiencia con la tecnología, pueda usarla sin dificultad**.
+**SaludTotal** es una aplicación móvil que permite a los usuarios registrarse, iniciar sesión y gestionar citas médicas en su totalidad. Está pensada para que **cualquier persona, sin importar su edad o experiencia con la tecnología, pueda usarla sin dificultad**.
 
 El diseño prioriza:
 - Textos y botones grandes, fáciles de leer y tocar.
@@ -31,72 +26,57 @@ El diseño prioriza:
 
 ## ✨ Funcionalidades
 
-- **Inicio de Sesión**: autenticación con número de cédula y contraseña, con validación de campos y mensajes de error persistentes.
-- **Registro de Usuario**: creación de cuenta con validación de cédula (10 dígitos), correo electrónico, contraseña segura y selección de fecha de nacimiento mediante calendario (con cálculo automático de edad).
-- **Modo Fácil**: se activa automáticamente para usuarios mayores de 60 años.
-- **Bienvenida**: pantalla principal con acceso directo a agendar cita y a la línea de ayuda telefónica.
-- **Especialidades**: selección de especialidad médica (Médico General, Cardiología, Traumatología, Oftalmología, Neurología, Vacunación) con buscador en tiempo real.
-- **Navegación persistente**: barra inferior con Inicio, Agendar y Cerrar sesión, visible en todas las pantallas.
+- **Autenticación Segura**: Inicio de sesión y registro con validación estricta de cédula ecuatoriana (10 dígitos), contraseñas coincidentes y cálculo automático de edad mediante calendario.
+- **Flujo Completo de Agendamiento**:
+  - **Especialidades**: Búsqueda en tiempo real del catálogo médico.
+  - **Doctores**: Selección de médicos filtrados por especialidad, mostrando distancia e **integración nativa con Google Maps** para ver cómo llegar.
+  - **Horarios Dinámicos**: Generación automática de próximos días hábiles (omitiendo domingos) y horarios de mañana/tarde.
+  - **Confirmación**: Resumen detallado antes de interactuar con la base de datos.
+- **Integración Externa**: Tras confirmar una cita, permite **agregarla al Calendario de Google** o compartir los detalles vía **WhatsApp**.
+- **Gestión de Citas (Mis Citas)**: Historial visual donde el usuario puede revisar sus citas agendadas y **cancelarlas** de ser necesario.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Tecnologías y Arquitectura
+
+El proyecto escaló de un almacenamiento básico a una arquitectura robusta orientada a buenas prácticas:
 
 - **Lenguaje:** Kotlin
 - **IDE:** Android Studio
-- **UI:** XML + Material Components for Android
-- **Almacenamiento local:** SharedPreferences
-- **Arquitectura:** Activities (sin librerías externas de arquitectura)
+- **UI:** XML + Material Components for Android + RecyclerViews
+- **Base de Datos Local:** **Room Database** (SQLite abstraction) con soporte para Relaciones (Foreign Keys) e Índices Únicos.
+- **Asincronismo:** **Corrutinas** (`lifecycleScope`, `Dispatchers.IO`) para evitar el bloqueo del hilo principal (Main Thread).
+- **Arquitectura:** **Patrón Repositorio (Repository Pattern)** para abstraer las fuentes de datos y DAOs (Data Access Objects), aislando la lógica de base de datos de las Activities.
 
 ---
 
 ## 📂 Estructura del Proyecto
 
-```
+```text
 app/src/main/java/com/example/myapplication/
-├── LoginActivity.kt         # Inicio de sesión
-├── RegisterActivity.kt      # Registro de nuevos usuarios
-├── WelcomeActivity.kt       # Pantalla de bienvenida
-└── SpecialtiesActivity.kt   # Selección de especialidad médica
-
-app/src/main/res/layout/
-├── activity_login.xml
-├── activity_register.xml
-├── activity_welcome.xml
-└── activity_specialties.xml
-```
-
----
-
-## 🚀 Instalación y Ejecución
-
-1. Clona este repositorio:
-   ```bash
-   git clone https://github.com/ImYasid/SaludTotal.git
-   ```
-2. Abre el proyecto en **Android Studio**.
-3. Espera a que Gradle sincronice las dependencias.
-4. Conecta un dispositivo físico o inicia un emulador (API 24 o superior recomendado).
-5. Presiona **Run ▶** para compilar e instalar la app.
-
-**Credenciales de prueba:**
-| Cédula | Contraseña |
-|---|---|
-| `1754378097` | `Yasid123@` |
-
-> ⚠️ Estas credenciales están únicamente para fines de prueba y demostración académica.
-
----
-
-## 🎓 Información Académica
-
-- **Materia:** Aplicaciones Móviles
-- **Universidad:** _Escuela Politecnica Nacional_
-- **Docente:** _Saa Pablo_
-- **Periodo/Semestre:** _2026-A 7mo Semestre_
-
----
-
-## 📄 Licencia
-
-Este proyecto fue desarrollado con fines académicos para la materia de Aplicaciones Móviles.
+├── data/
+│   ├── local/
+│   │   ├── dao/                 # Interfaces de acceso a datos (Queries SQL)
+│   │   │   ├── AppointmentDao.kt
+│   │   │   ├── DoctorDao.kt
+│   │   │   ├── SpecialtyDao.kt
+│   │   │   └── UserDao.kt
+│   │   ├── entity/              # Modelos de tablas de la base de datos
+│   │   │   ├── AppointmentEntity.kt
+│   │   │   ├── DoctorEntity.kt
+│   │   │   ├── SpecialtyEntity.kt
+│   │   │   └── UserEntity.kt
+│   │   └── SaludTotalDatabase.kt # Configuración principal de Room y SeedCallback
+│   └── repository/
+│       └── SaludTotalRepository.kt # Punto único de acceso a datos para la UI
+│
+├── LoginActivity.kt             # Inicio de sesión
+├── RegisterActivity.kt          # Creación de cuentas
+├── WelcomeActivity.kt           # Dashboard principal
+├── SpecialtiesActivity.kt       # Paso 1: Catálogo y búsqueda
+├── DoctoresDisponibles.kt       # Paso 2: Selección de médico y Maps
+├── Horario.kt                   # Paso 3: Selección dinámica de fecha/hora
+├── RevisarCita.kt               # Paso 4: Confirmación y guardado en DB
+├── CitaExitosa.kt               # Paso 5: Integración con Calendario/WhatsApp
+├── MisCitasActivity.kt          # Visualización y cancelación de citas
+└── CitasAdapter.kt              # Adaptador para el RecyclerView de citas
