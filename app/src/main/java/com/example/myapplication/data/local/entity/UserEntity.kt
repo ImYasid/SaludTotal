@@ -5,16 +5,18 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * Los 5 datos reales que se piden al registrar una cuenta:
- * - documentNumber: cédula, string de 10 dígitos, ÚNICA (índice unique abajo)
- * - fullName: nombres completos
- * - birthDate: fecha de nacimiento (guardada como texto, ej. "16/07/1998")
- * - email: correo
- * - password: contraseña
+ * Representa la cuenta de un paciente registrado en la aplicación (Tabla "users").
  *
- * Quité "phoneNumber" porque no lo estás pidiendo en ninguna pantalla, y renombré
- * "pin" a "password" para que sea claro qué es. Si más adelante SÍ necesitas teléfono,
- * agrégalo aquí y en RegisterActivity al mismo tiempo.
+ * La propiedad 'indices' configura el número de cédula (documentNumber) como ÚNICO.
+ * Esto asegura, a nivel de base de datos, que es matemáticamente imposible registrar
+ * dos cuentas diferentes con el mismo número de documento.
+ *
+ * @param id Identificador único autogenerado para el usuario. Es el ID que viaja por toda la app para mantener la sesión.
+ * @param documentNumber Número de cédula ecuatoriana (10 dígitos exactos).
+ * @param fullName Nombres y apellidos completos del paciente.
+ * @param birthDate Fecha de nacimiento guardada en formato de texto limpio (ej. "16/07/1998").
+ * @param email Correo electrónico de contacto.
+ * @param password Contraseña elegida por el usuario para acceder a su cuenta.
  */
 @Entity(
     tableName = "users",

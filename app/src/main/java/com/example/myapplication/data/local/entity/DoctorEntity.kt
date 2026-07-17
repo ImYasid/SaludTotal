@@ -6,12 +6,17 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * Un doctor pertenece a una especialidad (FK). Guarda dirección y distancia
- * porque DoctoresDisponibles ya muestra esos dos datos en cada tarjeta —
- * antes estaban escritos a mano ("Av. Principal #123, Centro", "0.5 km de distancia").
+ * Representa a un médico disponible en el sistema (Tabla "doctores").
  *
- * onDelete = CASCADE: si se borra una especialidad, se borran sus doctores con ella,
- * para no dejar doctores "huérfanos" apuntando a una especialidad que ya no existe.
+ * Cada doctor pertenece estrictamente a una especialidad mediante una llave foránea (FK).
+ * "onDelete = CASCADE" garantiza que, si se elimina una especialidad (ej. se deja de atender Pediatría),
+ * todos los pediatras se borren automáticamente para no dejar doctores "huérfanos".
+ *
+ * @param id Identificador único autogenerado para el doctor.
+ * @param nombre Nombre completo del profesional (ej. "Dr. Juan Pérez").
+ * @param especialidadId El ID de la especialidad a la que pertenece este doctor.
+ * @param direccion Dirección física del consultorio o clínica donde atiende.
+ * @param distanciaKm Distancia estimada usada para mostrarse en la tarjeta de información.
  */
 @Entity(
     tableName = "doctores",

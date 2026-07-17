@@ -14,18 +14,30 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 
+/**
+ * Pantalla inicial de la aplicación (Login).
+ * Permite a los usuarios registrados ingresar a su cuenta usando su cédula y contraseña.
+ * También ofrece opciones para registrarse como usuario nuevo o solicitar ayuda.
+ */
 class LoginActivity : AppCompatActivity() {
 
+    // Conexión con la base de datos para buscar si el usuario existe
     private val repository by lazy {
         val db = SaludTotalDatabase.getDatabase(applicationContext)
         SaludTotalRepository(db.userDao(), db.specialtyDao(), db.doctorDao(), db.appointmentDao())
     }
 
+    /**
+     * Prepara la pantalla al abrirse.
+     * Enlaza las cajas de texto y botones, y establece qué pasa cuando el usuario intenta ingresar.
+     *
+     * @param savedInstanceState Estado guardado de la pantalla.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // 1. Enlazar las vistas del XML con el código Kotlin
+        // 1. Enlazar las vistas del diseño XML con el código Kotlin
         val tilUsuario = findViewById<TextInputLayout>(R.id.tilUsuario)
         val tilContrasena = findViewById<TextInputLayout>(R.id.tilContrasena)
         val etUsuario = findViewById<TextInputEditText>(R.id.etUsuario)
@@ -34,24 +46,24 @@ class LoginActivity : AppCompatActivity() {
         val btnIrRegistro = findViewById<MaterialButton>(R.id.btnIrRegistro)
         val btnAyudaLogin = findViewById<MaterialButton>(R.id.btnAyudaLogin)
 
-        // Quita el mensaje de error apenas la persona empieza a corregir el campo
+        // Quita el mensaje de error en color rojo apenas la persona empieza a corregir el campo
         etUsuario.setOnClickListener { tilUsuario.error = null }
         etContrasena.setOnClickListener { tilContrasena.error = null }
 
-        // 2. Lógica del botón "Iniciar Sesión"
+        // 2. Lógica del botón principal "Iniciar Sesión"
         btnIniciarSesion.setOnClickListener {
-            // Evita que un doble toque (común en manos con menos precisión) mande el formulario 2 veces
+
+            // Evita que un doble toque accidental envíe el formulario dos veces seguidas
             btnIniciarSesion.isEnabled = false
             btnIniciarSesion.postDelayed({ btnIniciarSesion.isEnabled = true }, 1000)
 
-            // Usamos tus nombres de variables originales
             val usuarioIngresado = etUsuario.text.toString().trim()
             val contrasenaIngresada = etContrasena.text.toString().trim()
 
             tilUsuario.error = null
             tilContrasena.error = null
 
-            // Validación campo por campo, con mensaje pegado al campo (no desaparece solo)
+            // Validamos que las cajas no estén vacías antes de buscar en la base de datos
             if (usuarioIngresado.isEmpty()) {
                 tilUsuario.error = "Escribe tu número de cédula"
                 etUsuario.requestFocus()
@@ -63,33 +75,28 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Mantenemos el usuario maestro como acceso rápido de prueba/demostración.
+            // Usuario "Maestro" oculto para poder hacer pruebas rápidas en las presentaciones
             val esUsuarioMaestro = (usuarioIngresado == "1754378097" && contrasenaIngresada == "Yasid123@")
-
             if (esUsuarioMaestro) {
                 irAWelcome(usuarioId = -1L, nombre = "Administrador")
                 return@setOnClickListener
             }
 
-            // 2. Iniciamos el proceso asíncrono
+            // 3. Iniciamos la búsqueda en la base de datos sin congelar la pantalla (Corrutinas)
             lifecycleScope.launch {
-
-                // 3. Vamos al hilo secundario a validar las credenciales con "usuarioIngresado"
                 val user = withContext(Dispatchers.IO) {
                     repository.iniciarSesion(usuarioIngresado, contrasenaIngresada)
                 }
 
-                // 4. Evaluamos el resultado
+                // 4. Evaluamos si encontró al usuario o no
                 if (user != null) {
-                    // ✅ ÉXITO: El usuario sí existe y la contraseña coincide
+                    // ÉXITO: El usuario existe y la contraseña es correcta
                     irAWelcome(usuarioId = user.id, nombre = user.fullName)
                 } else {
-                    // ❌ ERROR: Credenciales incorrectas.
-                    // Vamos de nuevo al hilo secundario a ver si al menos la cédula existe
+                    // ERROR: Verificamos si al menos la cédula existe para darle un mejor consejo
                     val existeLaCedula = withContext(Dispatchers.IO) {
                         repository.obtenerUsuarioPorCedula(usuarioIngresado) != null
                     }
-
                     mostrarErrorLoginPersistente(existeLaCedula)
                 }
             }
@@ -101,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // 4. NUEVO: Botón de ayuda directa, visible desde la primera pantalla que ve el usuario
+        // 4. Botón de ayuda para adultos mayores o personas con dificultades técnicas
         btnAyudaLogin.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle("¿Necesitas ayuda?")
@@ -111,20 +118,33 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Cierra la pantalla de inicio de sesión y abre el menú principal (WelcomeActivity).
+     *
+     * @param usuarioId El ID único del usuario que acaba de ingresar.
+     * @param nombre El nombre completo del usuario para saludarlo en la siguiente pantalla.
+     */
     private fun irAWelcome(usuarioId: Long, nombre: String) {
         val intent = Intent(this, WelcomeActivity::class.java)
         intent.putExtra("usuarioId", usuarioId)
         intent.putExtra("nombre", nombre)
         startActivity(intent)
-        finish()
+        finish() // Cierra el Login para que no pueda volver atrás usando el botón "Atrás" del celular
     }
 
+    /**
+     * Muestra una ventana de error (alerta) explicando por qué no se pudo iniciar sesión.
+     *
+     * @param existeLaCedula Si es verdadero, significa que el usuario sí existe pero se equivocó de contraseña.
+     * Si es falso, significa que ni siquiera tiene cuenta.
+     */
     private fun mostrarErrorLoginPersistente(existeLaCedula: Boolean) {
         val mensaje = if (existeLaCedula) {
             "La cédula o la contraseña no coinciden con tu cuenta.\n\nRevisa que no tengas activado el bloqueo de mayúsculas y vuelve a intentar."
         } else {
             "La cédula o la contraseña no son correctas.\n\nSi es tu primera vez usando la app, toca '¿No tienes cuenta? Regístrate aquí' para crear una cuenta."
         }
+
         AlertDialog.Builder(this)
             .setTitle("No pudimos ingresar")
             .setMessage(mensaje)

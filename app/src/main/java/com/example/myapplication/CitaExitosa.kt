@@ -12,10 +12,22 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 
+/**
+ * Pantalla final del flujo de agendamiento.
+ * Muestra el resumen de la cita confirmada y ofrece opciones adicionales
+ * como agregar la cita al calendario del dispositivo o compartirla por WhatsApp.
+ *
+ * Se espera que reciba por [Intent] los siguientes Extras:
+ * - "especialidad" (String): Nombre de la especialidad.
+ * - "doctor" (String): Nombre del doctor asignado.
+ * - "direccion" (String): Ubicación del consultorio.
+ * - "fecha" (String): Fecha formateada (ej. "Miércoles 15 de Octubre").
+ * - "hora" (String): Hora formateada (ej. "09:00 AM").
+ * - "fechaHoraMillis" (Long): Timestamp exacto para la creación del evento en el calendario.
+ * - "usuarioId" (Long): Identificador del usuario actual para el retorno al inicio.
+ */
 class CitaExitosa : AppCompatActivity() {
 
-    // Variables de instancia: las necesitamos también dentro de abrirCalendario() y abrirWhatsApp(),
-    // no solo en onCreate()
     private var especialidad = ""
     private var doctor = ""
     private var direccion = ""
@@ -23,20 +35,25 @@ class CitaExitosa : AppCompatActivity() {
     private var hora = ""
     private var fechaHoraMillis = 0L
 
+    /**
+     * Inicializa la interfaz de usuario, recupera los datos de la cita desde el Intent,
+     * configura la vista del resumen y asigna los listeners a los botones de acción.
+     *
+     * @param savedInstanceState Estado guardado de la actividad en caso de recreación.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_cita_exitosa)
 
+        // Configuración para el padding dinámico de las barras del sistema (Edge to Edge)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // ---> Datos reales que llegan desde RevisarCita <---
-        // Antes "Dr. Juan Pérez", "Martes 12 de Mayo, 9:00 AM" y "Av. Principal #123"
-        // estaban escritos directo en el XML, sin importar qué hubiera elegido la persona.
+        // Recuperación de datos del Intent
         especialidad = intent.getStringExtra("especialidad") ?: ""
         doctor = intent.getStringExtra("doctor") ?: ""
         direccion = intent.getStringExtra("direccion") ?: "Consultorio principal"
@@ -45,15 +62,14 @@ class CitaExitosa : AppCompatActivity() {
         fechaHoraMillis = intent.getLongExtra("fechaHoraMillis", 0L)
         val usuarioId = intent.getLongExtra("usuarioId", -1L)
 
-        // Si por algún error de navegación se llega aquí sin datos, avisamos y regresamos
-        // en vez de mostrar un resumen vacío o inventado.
+        // Validación de datos requeridos para evitar mostrar un resumen vacío
         if (especialidad.isEmpty() || doctor.isEmpty() || fecha.isEmpty() || hora.isEmpty()) {
             Toast.makeText(this, "No encontramos los datos de tu cita.", Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
-        // Llenar el resumen con los datos reales
+        // Poblado de la interfaz con los datos reales
         findViewById<TextView>(R.id.tvEspecialidadValor).text = "$doctor - $especialidad"
         findViewById<TextView>(R.id.tvFechaHoraValor).text = "$fecha, $hora"
         findViewById<TextView>(R.id.tvUbicacionValor).text = direccion
@@ -62,29 +78,33 @@ class CitaExitosa : AppCompatActivity() {
         val btnWhatsApp = findViewById<MaterialButton>(R.id.btnWhatsApp)
         val btnInicio = findViewById<MaterialButton>(R.id.btnInicio)
 
-        // Acción: Abrir app de Calendario nativa
         btnCalendario.setOnClickListener {
             abrirCalendario()
         }
-        // Acción: Enviar un WhatsApp al propio usuario con los datos
+
         btnWhatsApp.setOnClickListener {
             abrirWhatsApp()
         }
-        // Acción: Volver al Dashboard borrando el historial de pantallas
+
         btnInicio.setOnClickListener {
             val intent = Intent(this, WelcomeActivity::class.java)
             intent.putExtra("usuarioId", usuarioId)
+            // Borra el historial de navegación para que el usuario no pueda "retroceder" a la cita
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
     }
 
     /**
-     * Usa un Intent implícito para abrir el calendario de Google (o el predeterminado)
-     * e inserta un nuevo evento con la especialidad, el doctor y el lugar reales.
+     * Construye y lanza un Intent para crear un nuevo evento en la aplicación de
+     * calendario predeterminada del dispositivo.
+     *
+     * Rellena automáticamente los campos de título, ubicación, descripción,
+     * fecha/hora de inicio y fecha/hora de fin (duración estimada de 30 minutos).
+     * Incluye manejo de excepciones en caso de que el dispositivo no cuente con app de calendario.
      */
     private fun abrirCalendario() {
-        val duracionEventoMs = 30 * 60 * 1000 // 30 minutos de duración estimada
+        val duracionEventoMs = 30 * 60 * 1000 // 30 minutos
         val horaInicio = if (fechaHoraMillis > 0) fechaHoraMillis else System.currentTimeMillis()
         val horaFin = horaInicio + duracionEventoMs
 
@@ -97,16 +117,18 @@ class CitaExitosa : AppCompatActivity() {
             .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, horaFin)
 
         try {
-            // Intentamos abrir el calendario directamente
             startActivity(intent)
         } catch (e: android.content.ActivityNotFoundException) {
-            // Plan B si falla
             Toast.makeText(this, "No encontramos una app de calendario instalada.", Toast.LENGTH_LONG).show()
         }
     }
 
     /**
-     * Usa un URI especial de WhatsApp (wa.me) para abrir un chat con los datos reales de la cita.
+     * Construye y lanza un Intent con un enlace web universal de WhatsApp (`https://api.whatsapp.com/send`)
+     * para redactar un mensaje con los detalles de la cita.
+     *
+     * Al usar un URI genérico, el sistema operativo delega la acción a la app instalada
+     * o, en su defecto, abre el navegador. Incluye manejo de excepciones.
      */
     private fun abrirWhatsApp() {
         val mensaje = "¡Hola! Te comparto los datos de mi cita médica:\n" +
@@ -114,12 +136,10 @@ class CitaExitosa : AppCompatActivity() {
                 "$fecha, $hora\n" +
                 direccion
 
-        // Usamos la API web de WhatsApp, súper segura y compatible con todos los Android
         val uri = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(mensaje)}")
         val intent = Intent(Intent.ACTION_VIEW, uri)
 
         try {
-            // El celular detectará el enlace y abrirá WhatsApp automáticamente
             startActivity(intent)
         } catch (e: android.content.ActivityNotFoundException) {
             Toast.makeText(this, "No pudimos abrir WhatsApp.", Toast.LENGTH_LONG).show()

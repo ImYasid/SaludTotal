@@ -4,9 +4,16 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Una fila por cada botón de SpecialtiesActivity (Médico General, Cardiología, etc.).
- * Guardamos color e ícono como texto para poder seguir pintando los botones dinámicamente
- * en vez de tenerlos hardcodeados uno por uno en el XML.
+ * Representa una categoría médica dentro de la aplicación (Tabla "especialidades").
+ *
+ * En lugar de dibujar botones fijos (hardcodeados) en el archivo XML, la pantalla
+ * SpecialtiesActivity lee esta tabla y genera los botones dinámicamente. Esto permite
+ * agregar o quitar especialidades a futuro sin tener que reprogramar la pantalla.
+ *
+ * @param id Identificador único autogenerado.
+ * @param nombre Nombre de la especialidad que aparecerá impreso en el botón (ej. "Cardiología").
+ * @param colorHex Código de color hexadecimal que pintará el fondo del botón (ej. "#EF4444").
+ * @param iconoResName Nombre del archivo de imagen (drawable) nativo de Android que se usará como ícono.
  */
 @Entity(tableName = "especialidades")
 data class SpecialtyEntity(
@@ -14,6 +21,5 @@ data class SpecialtyEntity(
     val id: Int = 0,
     val nombre: String,
     val colorHex: String,
-    // Nombre del drawable, ej. "ic_menu_search" (el mismo que ya usas en activity_specialties.xml)
     val iconoResName: String
 )
